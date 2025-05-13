@@ -200,3 +200,14 @@ textarea {
   border: 1px solid #ccc;
   padding: 8px;
 }
+
+.contenido-fondo {
+  background: url('background.png') center top no-repeat;
+  background-size: contain;
+  background-color: #f4f4f4;
+  min-height: calc(100vh - 180px); /* altura del banner */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
