@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -48,13 +49,21 @@
       </section>
 
       <!-- Historial -->
-      <section id="historial" class="tab" style="display:none;">
-        <h2>Historial de Partidos</h2>
-        <table>
-          <thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead>
-          <tbody id="tablaHistorial"></tbody>
-        </table>
-      </section>
+<section id="historial" class="tab" style="display:none;">
+  <h2>Historial y Gráficos</h2>
+  
+  <div id="contenedorGraficos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+    <canvas id="graficoGoles" width="400" height="300"></canvas>
+    <canvas id="graficoParticipacion" width="400" height="300"></canvas>
+  </div>
+
+  <h3 style="margin-top:40px;">Historial de Partidos</h3>
+  <table>
+    <thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead>
+    <tbody id="tablaHistorial"></tbody>
+  </table>
+  </section>
+
 
       <!-- Titulares -->
       <section id="titulares" class="tab" style="display:none;">
