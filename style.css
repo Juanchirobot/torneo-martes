@@ -1,86 +1,92 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  color: #111;
-  background: url('background.png') center center / cover no-repeat fixed;
-  background-color: #f4f4f4;
-  text-align: center;
-  min-height: 100vh;
-}
-
-header {
-  background: #000;
-  color: white;
-  position: relative;
-  padding-bottom: 20px;
-}
-
-.banner {
-  width: 100%;
-  height: 90px;
-  object-fit: cover;
-  display: block;
-}
-
-.header-content {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 15px 0;
-  backdrop-filter: blur(20px);
-}
-
-.header-content h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #fff;
-}
-
-.header-buttons {
-  margin-top: 10px;
+  font-family: 'Segoe UI', sans-serif;
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  background-color: #f4f4f4;
+  color: #111;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 240px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.banner-sidebar {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-bottom: 1px solid #333;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 20px;
   gap: 10px;
 }
 
 .btn {
-  background-color: #0f0f0f;
-  color: white;
-  border: 1px solid #444;
-  padding: 10px 18px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 10px;
   border-radius: 8px;
-  font-size: 14px;
   cursor: pointer;
+  font-size: 14px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: left;
 }
 
 .btn:hover {
-  background-color: #222;
-  transform: scale(1.02);
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.03);
 }
 
 .btn.secundario {
-  background-color: #e7e7e7;
+  background-color: #e0e0e0;
   color: #111;
-  border: 1px solid #bbb;
+  border: none;
 }
 
-main {
-  padding: 30px 20px;
-  max-width: 1000px;
-  margin: auto;
+.contenido-fondo {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('background.png') center center no-repeat;
+  background-size: cover;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
 .tab {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(6px);
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
 }
 
@@ -117,8 +123,18 @@ tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Modal */
-#modalFormulario {
+/* MODALES */
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+#modalFormulario,
+#modalJugador {
   display: none;
   position: fixed;
   background: white;
@@ -131,35 +147,6 @@ tr:hover {
   transform: translate(-50%, -50%);
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
-}
-
-#overlay {
-  display: none;
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 999;
-}
-
-.form-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 20px 0;
-}
-
-textarea, input, select {
-  padding: 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: #fdfdfd;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 80px;
 }
 
 .close {
@@ -175,7 +162,23 @@ textarea {
   color: #000;
 }
 
-/* Formulario por equipos */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+textarea, input, select {
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fdfdfd;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .form-equipos {
   display: flex;
   flex-direction: column;
@@ -200,14 +203,11 @@ textarea {
   border: 1px solid #ccc;
   padding: 8px;
 }
-
-.contenido-fondo {
-  background: url('background.png') center top no-repeat;
-  background-size: contain;
-  background-color: #f4f4f4;
-  min-height: calc(100vh - 180px); /* altura del banner */
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+#partidos {
+  max-width: 700px;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
-
