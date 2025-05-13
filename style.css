@@ -30,13 +30,6 @@ body {
   border-bottom: 1px solid #333;
 }
 
-.sidebar-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 15px 0;
-  text-align: center;
-}
-
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -46,8 +39,8 @@ body {
 }
 
 .btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   padding: 10px;
   border-radius: 8px;
@@ -58,7 +51,7 @@ body {
 }
 
 .btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   transform: scale(1.03);
 }
 
@@ -66,6 +59,16 @@ body {
   background-color: #e0e0e0;
   color: #111;
   border: none;
+}
+
+.btn.primario {
+  background-color: #008080;
+  color: white;
+  border: none;
+}
+
+.btn.primario:hover {
+  background-color: #006666;
 }
 
 .contenido-fondo {
@@ -79,15 +82,29 @@ body {
   background-size: cover;
   padding: 40px;
   box-sizing: border-box;
+  overflow-y: auto;
+}
+
+main {
+  max-width: 1000px;
+  width: 100%;
 }
 
 .tab {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(6px);
-  padding: 25px;
+  padding: 30px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
+}
+
+#ultimosPartidos div {
+  background: #fff;
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
@@ -95,6 +112,7 @@ h2 {
   color: #333;
   font-weight: 600;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 table {
@@ -202,12 +220,4 @@ textarea, input, select {
 .tabla-form th, .tabla-form td {
   border: 1px solid #ccc;
   padding: 8px;
-}
-#partidos {
-  max-width: 700px;
-  margin: auto;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
