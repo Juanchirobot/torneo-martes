@@ -151,24 +151,7 @@ tr:hover {
   z-index: 999;
 }
 
-#modalFormulario {
-  display: none;
-  position: fixed;
-  background: white;
-  padding: 30px;
-  z-index: 1000;
-  width: 90%;
-  max-width: 600px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
-
-  /* NUEVO */
-  max-height: 90vh;
-  overflow-y: auto;
-}
+#modalFormulario,
 #modalJugador {
   display: none;
   position: fixed;
@@ -177,11 +160,13 @@ tr:hover {
   z-index: 1000;
   width: 90%;
   max-width: 600px;
+  max-height: 90vh;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  overflow-y: auto;
 }
 
 .close {
@@ -219,6 +204,7 @@ textarea, input, select {
   flex-direction: column;
   gap: 20px;
   margin-top: 20px;
+  margin-bottom: 30px;
 }
 
 .form-equipos > div {
