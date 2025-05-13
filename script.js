@@ -3,11 +3,13 @@ let jugadoresLista = [];
 let mapaJugadores = {};
 let contadorID = 1;
 
+// Mostrar pestañas
 function mostrarTab(id) {
   document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
   document.getElementById(id).style.display = "block";
 }
 
+// MODAL nuevo partido
 function abrirModalFormulario() {
   document.getElementById("modalFormulario").style.display = "block";
   document.getElementById("overlay").style.display = "block";
@@ -19,9 +21,39 @@ function abrirModalFormulario() {
 
 function cerrarModal() {
   document.getElementById("modalFormulario").style.display = "none";
+  document.getElementById("modalJugador").style.display = "none";
   document.getElementById("overlay").style.display = "none";
 }
 
+// MODAL agregar jugador
+function abrirAgregarJugador() {
+  document.getElementById("modalJugador").style.display = "block";
+  document.getElementById("overlay").style.display = "block";
+}
+
+function cerrarModalJugador() {
+  document.getElementById("modalJugador").style.display = "none";
+  document.getElementById("overlay").style.display = "none";
+}
+
+document.getElementById("formJugador").addEventListener("submit", e => {
+  e.preventDefault();
+  const nombre = document.getElementById("nuevoJugador").value.trim();
+  if (!nombre) return;
+
+  if (!mapaJugadores[nombre]) {
+    mapaJugadores[nombre] = contadorID++;
+    jugadoresLista.push({ id: mapaJugadores[nombre], jugador_nombre: nombre });
+    alert(`Jugador ${nombre} agregado con ID ${mapaJugadores[nombre]}`);
+  } else {
+    alert("Ese jugador ya existe.");
+  }
+
+  cerrarModalJugador();
+  e.target.reset();
+});
+
+// Agregar fila a tabla de equipo
 function agregarFila(equipo) {
   const tbody = document.getElementById("tabla" + equipo);
   const fila = document.createElement("tr");
@@ -52,6 +84,7 @@ function agregarFila(equipo) {
   tbody.appendChild(fila);
 }
 
+// Guardar nuevo partido
 document.getElementById("formPartido").addEventListener("submit", e => {
   e.preventDefault();
 
@@ -69,6 +102,7 @@ document.getElementById("formPartido").addEventListener("submit", e => {
 
       if (!mapaJugadores[nombre]) {
         mapaJugadores[nombre] = contadorID++;
+        jugadoresLista.push({ id: mapaJugadores[nombre], jugador_nombre: nombre });
       }
 
       nuevos.push({
@@ -104,8 +138,9 @@ function descargarCSV() {
   URL.revokeObjectURL(a.href);
 }
 
+// Cargar CSV de jugadores y resultados desde GitHub
 async function cargarJugadoresDesdeGitHub() {
-  const url = 'jugadores.csv';
+  const url = 'https://raw.githubusercontent.com/Juanchirobot/torneo-martes/main/jugadores.csv';
   try {
     const res = await fetch(url);
     const text = await res.text();
@@ -117,20 +152,19 @@ async function cargarJugadoresDesdeGitHub() {
       return { id: parseInt(id), jugador_nombre: nombre };
     });
   } catch (err) {
-    alert("Error al cargar jugadores desde GitHub");
-    console.error(err);
+    console.error("Error al cargar jugadores:", err);
   }
 }
 
 async function cargarCSVDesdeGitHub() {
-  const url = 'resultados.csv';
+  const url = 'https://raw.githubusercontent.com/Juanchirobot/torneo-martes/main/resultados.csv';
   try {
     const res = await fetch(url);
     const text = await res.text();
     const rows = text.trim().split("\n").slice(1);
 
-    rows.forEach(linea => {
-      const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = linea.split(",");
+    rows.forEach(row => {
+      const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row.split(",");
 
       const id = parseInt(id_jugador);
       mapaJugadores[jugador_nombre] = id;
@@ -155,11 +189,13 @@ async function cargarCSVDesdeGitHub() {
   }
 }
 
+// Lógica para mostrar todos los datos
 function procesarDatos() {
   const posiciones = {};
   const historial = [];
   const actividad = {};
   const partidosSet = new Set();
+  const ultimos = {};
 
   const partidosPorFecha = {};
 
@@ -169,6 +205,32 @@ function procesarDatos() {
     partidosPorFecha[clave].push(d);
     partidosSet.add(clave);
   });
+
+  const clavesOrdenadas = Object.keys(partidosPorFecha).sort().reverse();
+  const ultimosHTML = [];
+
+  clavesOrdenadas.slice(0, 2).forEach(clave => {
+    const jugadores = partidosPorFecha[clave];
+    const equipos = { Blanco: [], Negro: [] };
+    let golesBlanco = 0, golesNegro = 0;
+
+    jugadores.forEach(j => {
+      equipos[j.equipo].push(`${j.jugador_nombre} (${j.goles_partido})`);
+      if (j.equipo === 'Blanco') golesBlanco += j.goles_partido;
+      else golesNegro += j.goles_partido;
+    });
+
+    const goleador = jugadores.reduce((a, b) => (a.goles_partido > b.goles_partido ? a : b));
+    ultimosHTML.push(`
+      <div style="margin-bottom:20px;">
+        <strong>${clave}</strong><br/>
+        Blanco ${golesBlanco} vs ${golesNegro} Negro<br/>
+        🥇 Goleador: ${goleador.jugador_nombre} (${goleador.goles_partido})<br/>
+      </div>
+    `);
+  });
+
+  document.getElementById("ultimosPartidos").innerHTML = ultimosHTML.join("");
 
   Object.values(partidosPorFecha).forEach(jugadores => {
     const golesPorEquipo = {};
