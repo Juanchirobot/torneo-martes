@@ -4,7 +4,7 @@ let mapaJugadores = {};
 let contadorID = 1;
 let nuevosJugadores = [];
 
-// Tabs
+// Mostrar pestañas
 function mostrarTab(id) {
   document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
   document.getElementById(id).style.display = "block";
@@ -35,7 +35,6 @@ function cerrarModalJugador() {
   document.getElementById("modalJugador").style.display = "none";
   document.getElementById("overlay").style.display = "none";
 }
-
 // Agregar nuevo jugador
 document.getElementById("formJugador").addEventListener("submit", e => {
   e.preventDefault();
@@ -54,7 +53,7 @@ document.getElementById("formJugador").addEventListener("submit", e => {
   e.target.reset();
 });
 
-// Agregar fila al formulario
+// Agregar fila a tabla de jugadores
 function agregarFila(equipo) {
   const tbody = document.getElementById("tabla" + equipo);
   const fila = document.createElement("tr");
@@ -123,8 +122,7 @@ document.getElementById("formPartido").addEventListener("submit", e => {
   cerrarModal();
   e.target.reset();
 });
-
-
+// Descargar resultados.csv
 function descargarCSV() {
   const headers = ["nombre_torneo","fecha_inicio_torneo","fecha_partido","nombre_partido","jugador_nombre","id_jugador","equipo","goles_partido","flageado"];
   const filas = datosPartidos.map(d => headers.map(h => d[h]).join(","));
@@ -137,6 +135,7 @@ function descargarCSV() {
   URL.revokeObjectURL(a.href);
 }
 
+// Descargar jugadores_nuevos.csv
 function descargarJugadoresCSV() {
   const headers = ["id_jugador", "jugador_nombre", "fecha_alta"];
   const filas = nuevosJugadores.map(j => headers.map(h => j[h]).join(","));
@@ -149,9 +148,9 @@ function descargarJugadoresCSV() {
   URL.revokeObjectURL(a.href);
 }
 
-// Cargar CSVs desde GitHub
+// Cargar jugadores desde GitHub
 async function cargarJugadoresDesdeGitHub() {
-  const url = 'jugadores.csv';
+  const url = 'https://raw.githubusercontent.com/Juanchirobot/torneo-martes/main/jugadores.csv';
   try {
     const res = await fetch(url);
     const text = await res.text();
@@ -167,13 +166,15 @@ async function cargarJugadoresDesdeGitHub() {
   }
 }
 
+// Cargar partidos desde GitHub
 async function cargarCSVDesdeGitHub() {
-  const url = 'resultados.csv';
+  const url = 'https://raw.githubusercontent.com/Juanchirobot/torneo-martes/main/resultados.csv';
   try {
     const res = await fetch(url);
     const text = await res.text();
     const rows = text.trim().split("\n").slice(1);
     rows.forEach(row => {
+      if (!row.trim()) return;
       const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row.split(",");
       datosPartidos.push({
         nombre_torneo,
@@ -192,7 +193,7 @@ async function cargarCSVDesdeGitHub() {
     console.error("Error al cargar resultados:", err);
   }
 }
-if (!d.fecha_partido || !d.nombre_partido) return;
+// Procesar datos y actualizar tablas
 function procesarDatos() {
   const posiciones = {};
   const historial = [];
@@ -201,6 +202,7 @@ function procesarDatos() {
   const partidosPorFecha = {};
 
   datosPartidos.forEach(d => {
+    if (!d || !d.fecha_partido || !d.nombre_partido) return;
     const clave = `${d.fecha_partido}-${d.nombre_partido}`;
     if (!partidosPorFecha[clave]) partidosPorFecha[clave] = [];
     partidosPorFecha[clave].push(d);
@@ -300,6 +302,7 @@ function actualizarHistorial(filas) {
   });
 }
 
+// Ejecutar carga inicial
 (async () => {
   await cargarJugadoresDesdeGitHub();
   await cargarCSVDesdeGitHub();
