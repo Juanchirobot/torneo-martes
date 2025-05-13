@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   color: #111;
-  background: url('assets/background.png') center center / cover no-repeat fixed;
+  background: url('background.png') center center / cover no-repeat fixed;
   background-color: #f4f4f4;
   text-align: center;
   min-height: 100vh;
