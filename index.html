@@ -17,14 +17,13 @@
       <button class="btn" onclick="mostrarTab('historial')">📜 Historial</button>
       <button class="btn" onclick="mostrarTab('titulares')">🏃 Titulares</button>
       <button class="btn" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
-      <button class="btn secundario" onclick="abrirAgregarJugador()">➕ Agregar Jugador</button>
     </nav>
   </aside>
 
   <!-- CONTENIDO PRINCIPAL -->
   <div class="contenido-fondo">
     <main>
-      <!-- Últimos 2 partidos -->
+      <!-- Últimos 5 partidos -->
       <section id="partidos" class="tab">
         <h2>Últimos Partidos</h2>
         <div id="ultimosPartidos"></div>
@@ -101,7 +100,11 @@
         </div>
       </div>
 
-      <button type="submit" class="btn">✅ Guardar y Descargar</button>
+      <div style="margin-top:20px;">
+        <button type="button" class="btn secundario" onclick="abrirAgregarJugador()">➕ Agregar nuevo jugador</button>
+      </div>
+
+      <button type="submit" class="btn primario">✅ Guardar y Descargar Partido</button>
     </form>
   </div>
 
@@ -111,7 +114,7 @@
     <h3>Agregar Nuevo Jugador</h3>
     <form id="formJugador">
       <input type="text" id="nuevoJugador" placeholder="Nombre del nuevo jugador" required />
-      <button type="submit" class="btn">✅ Agregar</button>
+      <button type="submit" class="btn primario">✅ Agregar Jugador</button>
     </form>
   </div>
 
