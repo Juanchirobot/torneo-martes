@@ -123,7 +123,7 @@ async function cargarJugadoresDesdeGitHub() {
 }
 
 async function cargarCSVDesdeGitHub() {
-  const url = 'https://raw.githubusercontent.com/Juanchirobot/torneo-martes/main/resultados.csv';
+  const url = 'resultados.csv';
   try {
     const res = await fetch(url);
     const text = await res.text();
