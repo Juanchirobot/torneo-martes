@@ -105,7 +105,7 @@ function descargarCSV() {
 }
 
 async function cargarJugadoresDesdeGitHub() {
-  const url = 'https://raw.githubusercontent.com/Juanchirobot/torneo-martes/main/jugadores.csv';
+  const url = 'jugadores.csv';
   try {
     const res = await fetch(url);
     const text = await res.text();
