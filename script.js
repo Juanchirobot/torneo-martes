@@ -192,7 +192,7 @@ async function cargarCSVDesdeGitHub() {
     console.error("Error al cargar resultados:", err);
   }
 }
-
+if (!d.fecha_partido || !d.nombre_partido) return;
 function procesarDatos() {
   const posiciones = {};
   const historial = [];
