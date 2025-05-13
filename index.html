@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Torneo Martes</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <!-- MENÚ LATERAL IZQUIERDO -->
@@ -24,7 +24,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="contenido-fondo">
     <main>
-      <!-- Últimos 5 partidos -->
+      <!-- Últimos Partidos -->
       <section id="partidos" class="tab">
         <h2>Últimos Partidos</h2>
         <div id="ultimosPartidos"></div>
@@ -48,22 +48,19 @@
         </table>
       </section>
 
-      <!-- Historial -->
-<section id="historial" class="tab" style="display:none;">
-  <h2>Historial y Gráficos</h2>
-  
-  <div id="contenedorGraficos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-    <canvas id="graficoGoles" width="400" height="300"></canvas>
-    <canvas id="graficoParticipacion" width="400" height="300"></canvas>
-  </div>
-
-  <h3 style="margin-top:40px;">Historial de Partidos</h3>
-  <table>
-    <thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead>
-    <tbody id="tablaHistorial"></tbody>
-  </table>
-  </section>
-
+      <!-- Historial + Gráficos -->
+      <section id="historial" class="tab" style="display:none;">
+        <h2>Historial y Gráficos</h2>
+        <div id="contenedorGraficos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+          <canvas id="graficoGoles" width="400" height="300"></canvas>
+          <canvas id="graficoParticipacion" width="400" height="300"></canvas>
+        </div>
+        <h3 style="margin-top:40px;">Historial de Partidos</h3>
+        <table>
+          <thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead>
+          <tbody id="tablaHistorial"></tbody>
+        </table>
+      </section>
 
       <!-- Titulares -->
       <section id="titulares" class="tab" style="display:none;">
@@ -76,9 +73,10 @@
     </main>
   </div>
 
-  <!-- MODAL Nuevo Partido -->
+  <!-- OVERLAY -->
   <div id="overlay" onclick="cerrarModal()"></div>
 
+  <!-- MODAL NUEVO PARTIDO -->
   <div id="modalFormulario">
     <span class="close" onclick="cerrarModal()">×</span>
     <h3>Cargar Nuevo Partido</h3>
@@ -93,7 +91,7 @@
         <div>
           <h4>Equipo Blanco</h4>
           <table class="tabla-form">
-            <thead><tr><th>Jugador</th><th>Goles</th></tr></thead>
+            <thead><tr><th>Jugador</th><th>Goles</th><th>❌</th></tr></thead>
             <tbody id="tablaBlanco"></tbody>
           </table>
           <button type="button" class="btn secundario" onclick="agregarFila('Blanco')">➕ Agregar Jugador</button>
@@ -102,7 +100,7 @@
         <div>
           <h4>Equipo Negro</h4>
           <table class="tabla-form">
-            <thead><tr><th>Jugador</th><th>Goles</th></tr></thead>
+            <thead><tr><th>Jugador</th><th>Goles</th><th>❌</th></tr></thead>
             <tbody id="tablaNegro"></tbody>
           </table>
           <button type="button" class="btn secundario" onclick="agregarFila('Negro')">➕ Agregar Jugador</button>
@@ -117,7 +115,7 @@
     </form>
   </div>
 
-  <!-- MODAL Agregar Jugador -->
+  <!-- MODAL NUEVO JUGADOR -->
   <div id="modalJugador" style="display:none;">
     <span class="close" onclick="cerrarModalJugador()">×</span>
     <h3>Agregar Nuevo Jugador</h3>
