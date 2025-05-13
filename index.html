@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Torneo Martes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <img src="assets/banner.jpg" alt="Banner Torneo Martes" class="banner">
+    <h1>Torneo Martes</h1>
+  </header>
+
+  <main>
+    <section class="acciones">
+      <h2>Subí una imagen con el resultado</h2>
+      <input type="file" id="inputImagen" accept="image/*" />
+      <button id="analizarImagen">Analizar Resultado</button>
+      <p><em>(Funcionalidad en desarrollo)</em></p>
+    </section>
+
+    <section class="posiciones">
+      <h2>Tabla de Posiciones</h2>
+      <button id="cargarCSV">Ver Posiciones</button>
+      <table id="tablaPosiciones">
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Puntos</th>
+            <th>Goles</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Cargado desde JS -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
