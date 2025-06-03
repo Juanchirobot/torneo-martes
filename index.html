@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Torneo Martes</title>
+  <title>Torneo de Amigos</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- MENÚ LATERAL IZQUIERDO -->
+  <!-- MENÚ LATERAL -->
   <aside class="sidebar">
     <img src="banner.png" alt="Banner Torneo" class="banner-sidebar" />
     <nav class="sidebar-nav">
@@ -48,14 +48,9 @@
         </table>
       </section>
 
-      <!-- Historial + Gráficos -->
+      <!-- Historial -->
       <section id="historial" class="tab" style="display:none;">
-        <h2>Historial y Gráficos</h2>
-        <div id="contenedorGraficos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-          <canvas id="graficoGoles" width="400" height="300"></canvas>
-          <canvas id="graficoParticipacion" width="400" height="300"></canvas>
-        </div>
-        <h3 style="margin-top:40px;">Historial de Partidos</h3>
+        <h2>Historial</h2>
         <table>
           <thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead>
           <tbody id="tablaHistorial"></tbody>
@@ -91,7 +86,7 @@
         <div>
           <h4>Equipo Blanco</h4>
           <table class="tabla-form">
-            <thead><tr><th>Jugador</th><th>Goles</th><th>❌</th></tr></thead>
+            <thead><tr><th>Jugador</th><th>Goles</th><th>Tarde</th><th>❌</th></tr></thead>
             <tbody id="tablaBlanco"></tbody>
           </table>
           <button type="button" class="btn secundario" onclick="agregarFila('Blanco')">➕ Agregar Jugador</button>
@@ -100,7 +95,7 @@
         <div>
           <h4>Equipo Negro</h4>
           <table class="tabla-form">
-            <thead><tr><th>Jugador</th><th>Goles</th><th>❌</th></tr></thead>
+            <thead><tr><th>Jugador</th><th>Goles</th><th>Tarde</th><th>❌</th></tr></thead>
             <tbody id="tablaNegro"></tbody>
           </table>
           <button type="button" class="btn secundario" onclick="agregarFila('Negro')">➕ Agregar Jugador</button>
@@ -111,7 +106,7 @@
         <button type="button" class="btn secundario" onclick="abrirAgregarJugador()">➕ Agregar nuevo jugador</button>
       </div>
 
-      <button type="submit" class="btn primario">✅ Guardar y Descargar Partido</button>
+      <button type="submit" class="btn primario">✅ Guardar Partido</button>
     </form>
   </div>
 
