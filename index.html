@@ -4,118 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Torneo de Amigos</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      height: 100vh;
-      background: #f4f4f4;
-    }
-    .sidebar {
-      width: 240px;
-      background: #1a1a1a;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 10px;
-    }
-    .banner-sidebar {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-    }
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      padding: 20px;
-      gap: 15px;
-    }
-    .btn {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: left;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-    .btn:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-    .contenido {
-      flex: 1;
-      padding: 40px;
-      overflow-y: auto;
-    }
-    .contenedor {
-      max-width: 1000px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th, td {
-      border-bottom: 1px solid #e0e0e0;
-      padding: 12px;
-      text-align: center;
-      font-size: 14px;
-    }
-    th {
-      background: #f9fafb;
-      color: #333;
-      font-weight: 600;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <nav class="sidebar">
     <img src="banner.png" alt="Banner" class="banner-sidebar" />
     <div class="sidebar-nav">
-      <button class="btn">🏠 Inicio</button>
-      <button class="btn">⚽ Cargar Partido</button>
-      <button class="btn">📊 Estadísticas</button>
+      <button class="btn" onclick="mostrarTab('partidos')">🏠 Inicio</button>
+      <button class="btn" onclick="mostrarTab('formulario')">⚽ Cargar Partido</button>
+      <button class="btn" onclick="mostrarTab('estadisticas')">📊 Estadísticas</button>
     </div>
   </nav>
-  <div class="contenido">
-    <div class="contenedor">
-      <h1>Torneo de Amigos – Apertura 2025</h1>
-      <h2>Últimos Partidos</h2>
-      <div style="margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px;">
-        <strong>Fecha 1</strong><br>
-        Blanco 3 vs 2 Negro<br>
-        🥇 Goleador: Juanchi (2)
+
+  <div class="contenido-fondo">
+    <main>
+      <div class="tab" id="partidos">
+        <h1>Torneo de Amigos</h1>
+        <div id="ultimosPartidos"></div>
+        <h2>Tabla de Posiciones</h2>
+        <table><thead><tr><th>Nombre</th><th>Puntos</th><th>Goles</th><th>Partidos</th></tr></thead><tbody id="tablaPosiciones"></tbody></table>
+        <h2>Goleadores</h2>
+        <table><thead><tr><th>Nombre</th><th>Goles</th></tr></thead><tbody id="tablaGoleadores"></tbody></table>
+        <h2>Ranking Titulares</h2>
+        <table><thead><tr><th>Nombre</th><th>Presencias</th><th>%</th></tr></thead><tbody id="tablaTitulares"></tbody></table>
+        <h2>Historial</h2>
+        <table><thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead><tbody id="tablaHistorial"></tbody></table>
       </div>
-      <h2>Tabla de Posiciones</h2>
-      <table>
-        <thead><tr><th>Nombre</th><th>Puntos</th><th>Goles</th><th>Partidos</th></tr></thead>
-        <tbody><tr><td>Juanchi</td><td>6</td><td>4</td><td>2</td></tr></tbody>
-      </table>
-    </div>
+
+      <div class="tab" id="formulario" style="display:none;">
+        <h2>Cargar Nuevo Partido</h2>
+        <form id="formPartido">
+          <input type="text" id="nombre_torneo" placeholder="Nombre del torneo" required />
+          <input type="date" id="fecha_partido" required />
+          <input type="text" id="nombre_partido" placeholder="Nombre del partido" required />
+          <table><tbody id="tablaBlanco"></tbody></table>
+          <table><tbody id="tablaNegro"></tbody></table>
+          <button type="submit" class="btn primario">Guardar</button>
+        </form>
+        <br>
+        <form id="formJugador">
+          <input type="text" id="nuevoJugador" placeholder="Nombre del jugador" required />
+          <button type="submit" class="btn secundario">Agregar Jugador</button>
+        </form>
+      </div>
+
+      <div class="tab" id="estadisticas" style="display:none;">
+        <h2>Estadísticas del Torneo</h2>
+        <canvas id="graficoGolesPorMes" height="100"></canvas>
+        <br>
+        <canvas id="graficoRendimientoJugadores" height="100"></canvas>
+      </div>
+    </main>
   </div>
+
+  <div id="overlay"></div>
+  <script src="script.js"></script>
 </body>
 </html>
