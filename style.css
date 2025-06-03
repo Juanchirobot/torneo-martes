@@ -1,3 +1,4 @@
+/* === RESET === */
 body {
   margin: 0;
   padding: 0;
@@ -9,6 +10,7 @@ body {
   overflow: hidden;
 }
 
+/* === SIDEBAR === */
 .sidebar {
   width: 240px;
   background: rgba(0, 0, 0, 0.9);
@@ -71,6 +73,7 @@ body {
   background-color: #006666;
 }
 
+/* === CONTENIDO PRINCIPAL === */
 .contenido-fondo {
   margin-left: 240px;
   width: calc(100% - 240px);
@@ -78,8 +81,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('background.png') center center no-repeat;
-  background-size: cover;
+  background: #f4f4f4;
   padding: 40px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -99,14 +101,6 @@ main {
   margin-bottom: 30px;
 }
 
-#ultimosPartidos div {
-  background: #fff;
-  margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
-}
-
 h2 {
   margin-top: 0;
   color: #333;
@@ -115,6 +109,7 @@ h2 {
   text-align: center;
 }
 
+/* === TABLAS === */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -141,7 +136,7 @@ tr:hover {
   background-color: #f1f1f1;
 }
 
-/* MODALES */
+/* === MODALES === */
 #overlay {
   display: none;
   position: fixed;
