@@ -1,9 +1,18 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const { MessagingResponse } = require('twilio').twiml;
+require('dotenv').config();
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.get('/env', (req, res) => {
+  res.json({
+    SHEET_ID: process.env.SHEET_ID || '',
+    API_KEY: process.env.API_KEY || ''
+  });
+});
 
 app.post('/webhook', async (req, res) => {
   const from = req.body.From;
