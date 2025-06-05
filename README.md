@@ -11,9 +11,11 @@ Este proyecto es una web para registrar partidos, jugadores y estadísticas. A c
 ## Configuración del servidor
 1. Instala las dependencias:
    ```bash
-   npm install express twilio node-fetch
+   npm install express twilio node-fetch dotenv
    ```
-2. Copia `server.js` y configura las variables de entorno:
+2. Copia `.env.example` a `.env` y completa:
+   - `SHEET_ID`: identificador de tu hoja de cálculo.
+   - `API_KEY`: clave de API de Google.
    - `N8N_WEBHOOK_URL`: URL del webhook de n8n que registrará los votos.
    - `PORT`: puerto donde se ejecutará el servidor (opcional, por defecto 3000).
 3. Ejecuta el servidor:
@@ -25,7 +27,7 @@ Este proyecto es una web para registrar partidos, jugadores y estadísticas. A c
 ## Configuración de Google Sheets
 1. Crea una hoja con las pestañas **Jugadores** y **Partidos**.
 2. Obtén el identificador de la hoja (`SHEET_ID`) y una clave de API válida (`API_KEY`).
-3. En `script.js` reemplaza los valores de `SHEET_ID` y `API_KEY` por los de tu proyecto.
+3. Guarda ambos valores en el archivo `.env` creado en el paso anterior.
 
 ## Paso a paso en n8n
 1. **Webhook**: crea un nuevo nodo *Webhook* con método `POST`. Obtén la URL y utilízala como `N8N_WEBHOOK_URL` en el servidor.

@@ -4,8 +4,19 @@ let mapaJugadores = {};
 let contadorID = 1;
 let nuevosJugadores = [];
 
-const SHEET_ID = "<SHEET_ID>";
-const API_KEY = "<API_KEY>";
+let SHEET_ID = '';
+let API_KEY = '';
+
+async function cargarConfig() {
+  try {
+    const res = await fetch('/env');
+    const cfg = await res.json();
+    SHEET_ID = cfg.SHEET_ID;
+    API_KEY = cfg.API_KEY;
+  } catch (err) {
+    console.error('Error cargando configuración:', err);
+  }
+}
 
 function mostrarTab(id) {
   document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
@@ -431,6 +442,7 @@ async function cargarPartidosDesdeSheets() {
 
 // Ejecutar al cargar la web desde Sheets
 (async () => {
+  await cargarConfig();
   await cargarJugadoresDesdeSheets();
   await cargarPartidosDesdeSheets();
 })();
