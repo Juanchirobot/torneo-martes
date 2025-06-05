@@ -36,3 +36,21 @@ Este proyecto es una web para registrar partidos, jugadores y estadísticas. A c
 
 La web (`index.html` y `script.js`) obtendrá la información desde Google Sheets para mostrar estadísticas actualizadas.
 
+## Prueba de funcionamiento (QA)
+
+Sigue estos pasos para verificar que todas las conexiones estén operativas:
+
+1. **Iniciar el servidor**
+   ```bash
+   export N8N_WEBHOOK_URL=<URL_DEL_WEBHOOK>
+   node server.js
+   ```
+2. **Arrancar n8n** y comprobar que el flujo con los nodos *Webhook* → *Set* → *Google Sheets* esté activo.
+3. **Configurar Twilio** para enviar los mensajes entrantes al endpoint público `/webhook` del servidor.
+4. **Abrir `index.html`** en el navegador y revisar que los jugadores y partidos se cargan desde Sheets sin errores.
+5. **Enviar un WhatsApp** al número de Twilio con el nombre de un jugador válido. Debería recibirse la respuesta "Voto recibido para: ...".
+6. **Revisar n8n** y la hoja de cálculo para confirmar que se registró una fila en la pestaña `Votos` con el teléfono, el mensaje y la fecha.
+7. **Actualizar la página** y verificar que las estadísticas reflejan el nuevo voto si la hoja lo procesa.
+
+Si cualquiera de estos pasos falla, revisa los logs de n8n, del servidor Node y de Twilio para identificar el problema.
+
