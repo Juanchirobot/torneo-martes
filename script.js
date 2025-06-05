@@ -4,6 +4,9 @@ let mapaJugadores = {};
 let contadorID = 1;
 let nuevosJugadores = [];
 
+const SHEET_ID = "<SHEET_ID>";
+const API_KEY = "<API_KEY>";
+
 function mostrarTab(id) {
   document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
   document.getElementById(id).style.display = "block";
@@ -318,12 +321,6 @@ function actualizarHistorial(filas) {
   });
 }
 
-// Ejecutar al cargar la web
-(async () => {
-  await cargarJugadoresDesdeGitHub();
-  await cargarCSVDesdeGitHub();
-})();
-function procesarDatos() {
   const posiciones = {};
   const historial = [];
   const actividad = {};
@@ -433,7 +430,54 @@ function actualizarHistorial(filas) {
 }
 
 // Ejecutar al cargar la web
+
+
+// Cargar datos desde Google Sheets
+async function cargarJugadoresDesdeSheets() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`;
+  try {
+    const res = await fetch(url);
+    const { values } = await res.json();
+    jugadoresLista = (values || []).slice(1).map(([id, nombre, fecha]) => {
+      const idNum = parseInt(id);
+      mapaJugadores[nombre] = idNum;
+      if (idNum >= contadorID) contadorID = idNum + 1;
+      return { id: idNum, jugador_nombre: nombre, fecha_alta: fecha };
+    });
+  } catch (err) {
+    console.error('Error al cargar jugadores (Sheets):', err);
+  }
+}
+
+async function cargarPartidosDesdeSheets() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`;
+  try {
+    const res = await fetch(url);
+    const { values } = await res.json();
+    (values || []).slice(1).forEach(row => {
+      const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row;
+      datosPartidos.push({
+        nombre_torneo,
+        fecha_inicio_torneo,
+        fecha_partido,
+        nombre_partido,
+        jugador_nombre,
+        id_jugador: parseInt(id_jugador),
+        equipo,
+        goles_partido: parseInt(goles_partido),
+        flageado: parseInt(flageado)
+      });
+    });
+    procesarDatos();
+  } catch (err) {
+    console.error('Error al cargar partidos (Sheets):', err);
+  }
+}
+
+// Ejecutar al cargar la web desde Sheets
 (async () => {
-  await cargarJugadoresDesdeGitHub();
-  await cargarCSVDesdeGitHub();
+  await cargarJugadoresDesdeSheets();
+  await cargarPartidosDesdeSheets();
 })();
+
+
