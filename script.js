@@ -4,6 +4,9 @@ let mapaJugadores = {};
 let contadorID = 1;
 let nuevosJugadores = [];
 
+const SHEET_ID = "<SHEET_ID>";
+const API_KEY = "<API_KEY>";
+
 function mostrarTab(id) {
   document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
   document.getElementById(id).style.display = "block";
@@ -164,34 +167,250 @@ function descargarJugadoresCSV() {
   a.click();
   URL.revokeObjectURL(a.href);
 }
-// Cargar jugadores desde GitHub
-async function cargarJugadoresDesdeGitHub() {
-  const url = 'jugadores.csv';
+function procesarDatos() {
+  const posiciones = {};
+  const historial = [];
+  const actividad = {};
+  const partidosSet = new Set();
+  const partidosPorFecha = {};
+
+  datosPartidos.forEach(d => {
+    if (!d || !d.fecha_partido || !d.nombre_partido) return;
+    const clave = `${d.fecha_partido}-${d.nombre_partido}`;
+    if (!partidosPorFecha[clave]) partidosPorFecha[clave] = [];
+    partidosPorFecha[clave].push(d);
+    partidosSet.add(`${d.nombre_torneo}||${d.fecha_partido}`);
+  });
+
+  const clavesOrdenadas = Object.keys(partidosPorFecha).sort().reverse();
+  const ultimosHTML = clavesOrdenadas.slice(0, 5).map(clave => {
+    const jugadores = partidosPorFecha[clave];
+    const torneo = jugadores[0]?.nombre_torneo || "Torneo";
+    const equipos = { Blanco: [], Negro: [] };
+    let golesBlanco = 0, golesNegro = 0;
+
+    jugadores.forEach(j => {
+      equipos[j.equipo].push(`${j.jugador_nombre} (${j.goles_partido})`);
+      if (j.equipo === 'Blanco') golesBlanco += j.goles_partido;
+      else golesNegro += j.goles_partido;
+    });
+
+    const goleador = jugadores.reduce((a, b) => (a.goles_partido > b.goles_partido ? a : b));
+    return `
+      <div>
+        <strong>${torneo} - ${clave}</strong><br/>
+        Blanco ${golesBlanco} vs ${golesNegro} Negro<br/>
+        🥇 Goleador: ${goleador.jugador_nombre} (${goleador.goles_partido})<br/>
+      </div>
+    `;
+  });
+
+  document.getElementById("ultimosPartidos").innerHTML = ultimosHTML.join("");
+
+  Object.values(partidosPorFecha).forEach(jugadores => {
+    const golesPorEquipo = {};
+    jugadores.forEach(j => {
+      golesPorEquipo[j.equipo] = (golesPorEquipo[j.equipo] || 0) + j.goles_partido;
+    });
+
+    const equipos = Object.keys(golesPorEquipo);
+    let resultado;
+    if (golesPorEquipo[equipos[0]] > golesPorEquipo[equipos[1]]) resultado = equipos[0];
+    else if (golesPorEquipo[equipos[0]] < golesPorEquipo[equipos[1]]) resultado = equipos[1];
+    else resultado = "empate";
+
+    const maxGoles = Math.max(...jugadores.map(j => j.goles_partido));
+    const goleadores = jugadores.filter(j => j.goles_partido === maxGoles && maxGoles > 0);
+
+    jugadores.forEach(j => {
+      const id = j.id_jugador;
+      if (!posiciones[id]) posiciones[id] = { nombre: j.jugador_nombre, puntos: 0, goles: 0, partidos: 0 };
+      if (!actividad[id]) actividad[id] = { nombre: j.jugador_nombre, presencia: 0 };
+
+      posiciones[id].goles += j.goles_partido;
+      posiciones[id].partidos += 1;
+      actividad[id].presencia += j.flageado;
+
+      if (resultado !== "empate" && j.equipo === resultado) posiciones[id].puntos += 3;
+      else if (resultado === "empate") posiciones[id].puntos += 1;
+
+      if (goleadores.some(g => g.id_jugador === j.id_jugador)) posiciones[id].puntos += 1;
+
+      historial.push(j);
+    });
+  });
+
+  actualizarTabla("tablaPosiciones", posiciones, ["nombre", "puntos", "goles", "partidos"]);
+  actualizarTabla("tablaGoleadores", posiciones, ["nombre", "goles"]);
+  actualizarTablaTitulares(actividad, partidosSet.size);
+  actualizarHistorial(historial);
+}
+
+function actualizarTabla(id, datos, campos) {
+  const tbody = document.getElementById(id);
+  tbody.innerHTML = "";
+  Object.values(datos)
+    .sort((a, b) => (b.puntos ?? b.presencia ?? 0) - (a.puntos ?? a.presencia ?? 0))
+    .forEach(d => {
+      const fila = campos.map(c => `<td>${d[c]}</td>`).join("");
+      tbody.innerHTML += `<tr>${fila}</tr>`;
+    });
+}
+
+function actualizarTablaTitulares(actividad, totalFechas) {
+  const tbody = document.getElementById("tablaTitulares");
+  tbody.innerHTML = "";
+  Object.values(actividad)
+    .sort((a, b) => b.presencia - a.presencia)
+    .forEach(j => {
+      const porcentaje = Math.min((j.presencia / totalFechas) * 100, 100).toFixed(0);
+      tbody.innerHTML += `<tr><td>${j.nombre}</td><td>${j.presencia}</td><td>${porcentaje}%</td></tr>`;
+    });
+}
+
+function actualizarHistorial(filas) {
+  const tbody = document.getElementById("tablaHistorial");
+  tbody.innerHTML = "";
+  filas.forEach(d => {
+    tbody.innerHTML += `<tr><td>${d.fecha_partido}</td><td>${d.nombre_partido}</td><td>${d.jugador_nombre}</td><td>${d.equipo}</td><td>${d.goles_partido}</td></tr>`;
+  });
+}
+
+  const posiciones = {};
+  const historial = [];
+  const actividad = {};
+  const partidosSet = new Set();
+  const partidosPorFecha = {};
+
+  datosPartidos.forEach(d => {
+    if (!d || !d.fecha_partido || !d.nombre_partido) return;
+    const clave = `${d.fecha_partido}-${d.nombre_partido}`;
+    if (!partidosPorFecha[clave]) partidosPorFecha[clave] = [];
+    partidosPorFecha[clave].push(d);
+    partidosSet.add(`${d.nombre_torneo}||${d.fecha_partido}`);
+  });
+
+  const clavesOrdenadas = Object.keys(partidosPorFecha).sort().reverse();
+  const ultimosHTML = clavesOrdenadas.slice(0, 5).map(clave => {
+    const jugadores = partidosPorFecha[clave];
+    const torneo = jugadores[0]?.nombre_torneo || "Torneo";
+    const equipos = { Blanco: [], Negro: [] };
+    let golesBlanco = 0, golesNegro = 0;
+
+    jugadores.forEach(j => {
+      equipos[j.equipo].push(`${j.jugador_nombre} (${j.goles_partido})`);
+      if (j.equipo === 'Blanco') golesBlanco += j.goles_partido;
+      else golesNegro += j.goles_partido;
+    });
+
+    const goleador = jugadores.reduce((a, b) => (a.goles_partido > b.goles_partido ? a : b));
+    return `
+      <div>
+        <strong>${torneo} - ${clave}</strong><br/>
+        Blanco ${golesBlanco} vs ${golesNegro} Negro<br/>
+        🥇 Goleador: ${goleador.jugador_nombre} (${goleador.goles_partido})<br/>
+      </div>
+    `;
+  });
+
+  document.getElementById("ultimosPartidos").innerHTML = ultimosHTML.join("");
+
+  Object.values(partidosPorFecha).forEach(jugadores => {
+    const golesPorEquipo = {};
+    jugadores.forEach(j => {
+      golesPorEquipo[j.equipo] = (golesPorEquipo[j.equipo] || 0) + j.goles_partido;
+    });
+
+    const equipos = Object.keys(golesPorEquipo);
+    let resultado;
+    if (golesPorEquipo[equipos[0]] > golesPorEquipo[equipos[1]]) resultado = equipos[0];
+    else if (golesPorEquipo[equipos[0]] < golesPorEquipo[equipos[1]]) resultado = equipos[1];
+    else resultado = "empate";
+
+    const maxGoles = Math.max(...jugadores.map(j => j.goles_partido));
+    const goleadores = jugadores.filter(j => j.goles_partido === maxGoles && maxGoles > 0);
+
+    jugadores.forEach(j => {
+      const id = j.id_jugador;
+      if (!posiciones[id]) posiciones[id] = { nombre: j.jugador_nombre, puntos: 0, goles: 0, partidos: 0 };
+      if (!actividad[id]) actividad[id] = { nombre: j.jugador_nombre, presencia: 0 };
+
+      posiciones[id].goles += j.goles_partido;
+      posiciones[id].partidos += 1;
+      actividad[id].presencia += j.flageado;
+
+      if (resultado !== "empate" && j.equipo === resultado) posiciones[id].puntos += 3;
+      else if (resultado === "empate") posiciones[id].puntos += 1;
+
+      if (goleadores.some(g => g.id_jugador === j.id_jugador)) posiciones[id].puntos += 1;
+
+      historial.push(j);
+    });
+  });
+
+  actualizarTabla("tablaPosiciones", posiciones, ["nombre", "puntos", "goles", "partidos"]);
+  actualizarTabla("tablaGoleadores", posiciones, ["nombre", "goles"]);
+  actualizarTablaTitulares(actividad, partidosSet.size);
+  actualizarHistorial(historial);
+}
+
+function actualizarTabla(id, datos, campos) {
+  const tbody = document.getElementById(id);
+  tbody.innerHTML = "";
+  Object.values(datos)
+    .sort((a, b) => (b.puntos ?? b.presencia ?? 0) - (a.puntos ?? a.presencia ?? 0))
+    .forEach(d => {
+      const fila = campos.map(c => `<td>${d[c]}</td>`).join("");
+      tbody.innerHTML += `<tr>${fila}</tr>`;
+    });
+}
+
+function actualizarTablaTitulares(actividad, totalFechas) {
+  const tbody = document.getElementById("tablaTitulares");
+  tbody.innerHTML = "";
+  Object.values(actividad)
+    .sort((a, b) => b.presencia - a.presencia)
+    .forEach(j => {
+      const porcentaje = Math.min((j.presencia / totalFechas) * 100, 100).toFixed(0);
+      tbody.innerHTML += `<tr><td>${j.nombre}</td><td>${j.presencia}</td><td>${porcentaje}%</td></tr>`;
+    });
+}
+
+function actualizarHistorial(filas) {
+  const tbody = document.getElementById("tablaHistorial");
+  tbody.innerHTML = "";
+  filas.forEach(d => {
+    tbody.innerHTML += `<tr><td>${d.fecha_partido}</td><td>${d.nombre_partido}</td><td>${d.jugador_nombre}</td><td>${d.equipo}</td><td>${d.goles_partido}</td></tr>`;
+  });
+}
+
+// Ejecutar al cargar la web
+
+
+// Cargar datos desde Google Sheets
+async function cargarJugadoresDesdeSheets() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`;
   try {
     const res = await fetch(url);
-    const text = await res.text();
-    const rows = text.trim().split("\n").slice(1);
-    jugadoresLista = rows.map(row => {
-      const [id, nombre, fecha] = row.split(",");
-      mapaJugadores[nombre] = parseInt(id);
-      if (parseInt(id) >= contadorID) contadorID = parseInt(id) + 1;
-      return { id: parseInt(id), jugador_nombre: nombre, fecha_alta: fecha };
+    const { values } = await res.json();
+    jugadoresLista = (values || []).slice(1).map(([id, nombre, fecha]) => {
+      const idNum = parseInt(id);
+      mapaJugadores[nombre] = idNum;
+      if (idNum >= contadorID) contadorID = idNum + 1;
+      return { id: idNum, jugador_nombre: nombre, fecha_alta: fecha };
     });
   } catch (err) {
-    console.error("Error al cargar jugadores:", err);
+    console.error('Error al cargar jugadores (Sheets):', err);
   }
 }
 
-// Cargar resultados desde GitHub
-async function cargarCSVDesdeGitHub() {
-  const url = 'resultados.csv';
+async function cargarPartidosDesdeSheets() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`;
   try {
     const res = await fetch(url);
-    const text = await res.text();
-    const rows = text.trim().split("\n").slice(1);
-    rows.forEach(row => {
-      if (!row.trim()) return;
-      const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row.split(",");
+    const { values } = await res.json();
+    (values || []).slice(1).forEach(row => {
+      const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row;
       datosPartidos.push({
         nombre_torneo,
         fecha_inicio_torneo,
@@ -206,234 +425,14 @@ async function cargarCSVDesdeGitHub() {
     });
     procesarDatos();
   } catch (err) {
-    console.error("Error al cargar resultados:", err);
+    console.error('Error al cargar partidos (Sheets):', err);
   }
 }
-function procesarDatos() {
-  const posiciones = {};
-  const historial = [];
-  const actividad = {};
-  const partidosSet = new Set();
-  const partidosPorFecha = {};
 
-  datosPartidos.forEach(d => {
-    if (!d || !d.fecha_partido || !d.nombre_partido) return;
-    const clave = `${d.fecha_partido}-${d.nombre_partido}`;
-    if (!partidosPorFecha[clave]) partidosPorFecha[clave] = [];
-    partidosPorFecha[clave].push(d);
-    partidosSet.add(`${d.nombre_torneo}||${d.fecha_partido}`);
-  });
-
-  const clavesOrdenadas = Object.keys(partidosPorFecha).sort().reverse();
-  const ultimosHTML = clavesOrdenadas.slice(0, 5).map(clave => {
-    const jugadores = partidosPorFecha[clave];
-    const torneo = jugadores[0]?.nombre_torneo || "Torneo";
-    const equipos = { Blanco: [], Negro: [] };
-    let golesBlanco = 0, golesNegro = 0;
-
-    jugadores.forEach(j => {
-      equipos[j.equipo].push(`${j.jugador_nombre} (${j.goles_partido})`);
-      if (j.equipo === 'Blanco') golesBlanco += j.goles_partido;
-      else golesNegro += j.goles_partido;
-    });
-
-    const goleador = jugadores.reduce((a, b) => (a.goles_partido > b.goles_partido ? a : b));
-    return `
-      <div>
-        <strong>${torneo} - ${clave}</strong><br/>
-        Blanco ${golesBlanco} vs ${golesNegro} Negro<br/>
-        🥇 Goleador: ${goleador.jugador_nombre} (${goleador.goles_partido})<br/>
-      </div>
-    `;
-  });
-
-  document.getElementById("ultimosPartidos").innerHTML = ultimosHTML.join("");
-
-  Object.values(partidosPorFecha).forEach(jugadores => {
-    const golesPorEquipo = {};
-    jugadores.forEach(j => {
-      golesPorEquipo[j.equipo] = (golesPorEquipo[j.equipo] || 0) + j.goles_partido;
-    });
-
-    const equipos = Object.keys(golesPorEquipo);
-    let resultado;
-    if (golesPorEquipo[equipos[0]] > golesPorEquipo[equipos[1]]) resultado = equipos[0];
-    else if (golesPorEquipo[equipos[0]] < golesPorEquipo[equipos[1]]) resultado = equipos[1];
-    else resultado = "empate";
-
-    const maxGoles = Math.max(...jugadores.map(j => j.goles_partido));
-    const goleadores = jugadores.filter(j => j.goles_partido === maxGoles && maxGoles > 0);
-
-    jugadores.forEach(j => {
-      const id = j.id_jugador;
-      if (!posiciones[id]) posiciones[id] = { nombre: j.jugador_nombre, puntos: 0, goles: 0, partidos: 0 };
-      if (!actividad[id]) actividad[id] = { nombre: j.jugador_nombre, presencia: 0 };
-
-      posiciones[id].goles += j.goles_partido;
-      posiciones[id].partidos += 1;
-      actividad[id].presencia += j.flageado;
-
-      if (resultado !== "empate" && j.equipo === resultado) posiciones[id].puntos += 3;
-      else if (resultado === "empate") posiciones[id].puntos += 1;
-
-      if (goleadores.some(g => g.id_jugador === j.id_jugador)) posiciones[id].puntos += 1;
-
-      historial.push(j);
-    });
-  });
-
-  actualizarTabla("tablaPosiciones", posiciones, ["nombre", "puntos", "goles", "partidos"]);
-  actualizarTabla("tablaGoleadores", posiciones, ["nombre", "goles"]);
-  actualizarTablaTitulares(actividad, partidosSet.size);
-  actualizarHistorial(historial);
-}
-
-function actualizarTabla(id, datos, campos) {
-  const tbody = document.getElementById(id);
-  tbody.innerHTML = "";
-  Object.values(datos)
-    .sort((a, b) => (b.puntos ?? b.presencia ?? 0) - (a.puntos ?? a.presencia ?? 0))
-    .forEach(d => {
-      const fila = campos.map(c => `<td>${d[c]}</td>`).join("");
-      tbody.innerHTML += `<tr>${fila}</tr>`;
-    });
-}
-
-function actualizarTablaTitulares(actividad, totalFechas) {
-  const tbody = document.getElementById("tablaTitulares");
-  tbody.innerHTML = "";
-  Object.values(actividad)
-    .sort((a, b) => b.presencia - a.presencia)
-    .forEach(j => {
-      const porcentaje = Math.min((j.presencia / totalFechas) * 100, 100).toFixed(0);
-      tbody.innerHTML += `<tr><td>${j.nombre}</td><td>${j.presencia}</td><td>${porcentaje}%</td></tr>`;
-    });
-}
-
-function actualizarHistorial(filas) {
-  const tbody = document.getElementById("tablaHistorial");
-  tbody.innerHTML = "";
-  filas.forEach(d => {
-    tbody.innerHTML += `<tr><td>${d.fecha_partido}</td><td>${d.nombre_partido}</td><td>${d.jugador_nombre}</td><td>${d.equipo}</td><td>${d.goles_partido}</td></tr>`;
-  });
-}
-
-// Ejecutar al cargar la web
+// Ejecutar al cargar la web desde Sheets
 (async () => {
-  await cargarJugadoresDesdeGitHub();
-  await cargarCSVDesdeGitHub();
+  await cargarJugadoresDesdeSheets();
+  await cargarPartidosDesdeSheets();
 })();
-function procesarDatos() {
-  const posiciones = {};
-  const historial = [];
-  const actividad = {};
-  const partidosSet = new Set();
-  const partidosPorFecha = {};
 
-  datosPartidos.forEach(d => {
-    if (!d || !d.fecha_partido || !d.nombre_partido) return;
-    const clave = `${d.fecha_partido}-${d.nombre_partido}`;
-    if (!partidosPorFecha[clave]) partidosPorFecha[clave] = [];
-    partidosPorFecha[clave].push(d);
-    partidosSet.add(`${d.nombre_torneo}||${d.fecha_partido}`);
-  });
 
-  const clavesOrdenadas = Object.keys(partidosPorFecha).sort().reverse();
-  const ultimosHTML = clavesOrdenadas.slice(0, 5).map(clave => {
-    const jugadores = partidosPorFecha[clave];
-    const torneo = jugadores[0]?.nombre_torneo || "Torneo";
-    const equipos = { Blanco: [], Negro: [] };
-    let golesBlanco = 0, golesNegro = 0;
-
-    jugadores.forEach(j => {
-      equipos[j.equipo].push(`${j.jugador_nombre} (${j.goles_partido})`);
-      if (j.equipo === 'Blanco') golesBlanco += j.goles_partido;
-      else golesNegro += j.goles_partido;
-    });
-
-    const goleador = jugadores.reduce((a, b) => (a.goles_partido > b.goles_partido ? a : b));
-    return `
-      <div>
-        <strong>${torneo} - ${clave}</strong><br/>
-        Blanco ${golesBlanco} vs ${golesNegro} Negro<br/>
-        🥇 Goleador: ${goleador.jugador_nombre} (${goleador.goles_partido})<br/>
-      </div>
-    `;
-  });
-
-  document.getElementById("ultimosPartidos").innerHTML = ultimosHTML.join("");
-
-  Object.values(partidosPorFecha).forEach(jugadores => {
-    const golesPorEquipo = {};
-    jugadores.forEach(j => {
-      golesPorEquipo[j.equipo] = (golesPorEquipo[j.equipo] || 0) + j.goles_partido;
-    });
-
-    const equipos = Object.keys(golesPorEquipo);
-    let resultado;
-    if (golesPorEquipo[equipos[0]] > golesPorEquipo[equipos[1]]) resultado = equipos[0];
-    else if (golesPorEquipo[equipos[0]] < golesPorEquipo[equipos[1]]) resultado = equipos[1];
-    else resultado = "empate";
-
-    const maxGoles = Math.max(...jugadores.map(j => j.goles_partido));
-    const goleadores = jugadores.filter(j => j.goles_partido === maxGoles && maxGoles > 0);
-
-    jugadores.forEach(j => {
-      const id = j.id_jugador;
-      if (!posiciones[id]) posiciones[id] = { nombre: j.jugador_nombre, puntos: 0, goles: 0, partidos: 0 };
-      if (!actividad[id]) actividad[id] = { nombre: j.jugador_nombre, presencia: 0 };
-
-      posiciones[id].goles += j.goles_partido;
-      posiciones[id].partidos += 1;
-      actividad[id].presencia += j.flageado;
-
-      if (resultado !== "empate" && j.equipo === resultado) posiciones[id].puntos += 3;
-      else if (resultado === "empate") posiciones[id].puntos += 1;
-
-      if (goleadores.some(g => g.id_jugador === j.id_jugador)) posiciones[id].puntos += 1;
-
-      historial.push(j);
-    });
-  });
-
-  actualizarTabla("tablaPosiciones", posiciones, ["nombre", "puntos", "goles", "partidos"]);
-  actualizarTabla("tablaGoleadores", posiciones, ["nombre", "goles"]);
-  actualizarTablaTitulares(actividad, partidosSet.size);
-  actualizarHistorial(historial);
-}
-
-function actualizarTabla(id, datos, campos) {
-  const tbody = document.getElementById(id);
-  tbody.innerHTML = "";
-  Object.values(datos)
-    .sort((a, b) => (b.puntos ?? b.presencia ?? 0) - (a.puntos ?? a.presencia ?? 0))
-    .forEach(d => {
-      const fila = campos.map(c => `<td>${d[c]}</td>`).join("");
-      tbody.innerHTML += `<tr>${fila}</tr>`;
-    });
-}
-
-function actualizarTablaTitulares(actividad, totalFechas) {
-  const tbody = document.getElementById("tablaTitulares");
-  tbody.innerHTML = "";
-  Object.values(actividad)
-    .sort((a, b) => b.presencia - a.presencia)
-    .forEach(j => {
-      const porcentaje = Math.min((j.presencia / totalFechas) * 100, 100).toFixed(0);
-      tbody.innerHTML += `<tr><td>${j.nombre}</td><td>${j.presencia}</td><td>${porcentaje}%</td></tr>`;
-    });
-}
-
-function actualizarHistorial(filas) {
-  const tbody = document.getElementById("tablaHistorial");
-  tbody.innerHTML = "";
-  filas.forEach(d => {
-    tbody.innerHTML += `<tr><td>${d.fecha_partido}</td><td>${d.nombre_partido}</td><td>${d.jugador_nombre}</td><td>${d.equipo}</td><td>${d.goles_partido}</td></tr>`;
-  });
-}
-
-// Ejecutar al cargar la web
-(async () => {
-  await cargarJugadoresDesdeGitHub();
-  await cargarCSVDesdeGitHub();
-})();
