@@ -11,7 +11,7 @@ Este proyecto es una web para registrar partidos, jugadores y estadísticas. A c
 ## Configuración del servidor
 1. Instala las dependencias:
    ```bash
-   npm install express twilio node-fetch
+   npm install
    ```
 2. Copia `server.js` y configura las variables de entorno:
    - `N8N_WEBHOOK_URL`: URL del webhook de n8n que registrará los votos.
