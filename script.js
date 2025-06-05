@@ -3,6 +3,7 @@ let jugadoresLista = [];
 let mapaJugadores = {};
 let contadorID = 1;
 let nuevosJugadores = [];
+let datosFormacion = [];
 
 const SHEET_ID = "<SHEET_ID>";
 const API_KEY = "<API_KEY>";
@@ -392,6 +393,10 @@ async function cargarJugadoresDesdeSheets() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`;
   try {
     const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`Error al cargar jugadores (Sheets): ${res.status} ${res.statusText}`);
+      return;
+    }
     const { values } = await res.json();
     jugadoresLista = (values || []).slice(1).map(([id, nombre, fecha]) => {
       const idNum = parseInt(id);
@@ -408,6 +413,10 @@ async function cargarPartidosDesdeSheets() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`;
   try {
     const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`Error al cargar partidos (Sheets): ${res.status} ${res.statusText}`);
+      return;
+    }
     const { values } = await res.json();
     (values || []).slice(1).forEach(row => {
       const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row;
@@ -429,10 +438,26 @@ async function cargarPartidosDesdeSheets() {
   }
 }
 
+async function cargarFormacionDesdeSheets() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Formacion?key=${API_KEY}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`Error al cargar formacion (Sheets): ${res.status} ${res.statusText}`);
+      return;
+    }
+    const { values } = await res.json();
+    datosFormacion = (values || []).slice(1);
+  } catch (err) {
+    console.error('Error al cargar formacion (Sheets):', err);
+  }
+}
+
 // Ejecutar al cargar la web desde Sheets
 (async () => {
   await cargarJugadoresDesdeSheets();
   await cargarPartidosDesdeSheets();
+  await cargarFormacionDesdeSheets();
 })();
 
 
