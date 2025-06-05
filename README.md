@@ -22,6 +22,11 @@ Este proyecto es una web para registrar partidos, jugadores y estadísticas. A c
    ```
 4. En la consola de Twilio, configura la URL pública de `/webhook` como webhook de mensajes entrantes de WhatsApp.
 
+## Configuración de Google Sheets
+1. Crea una hoja con las pestañas **Jugadores** y **Partidos**.
+2. Obtén el identificador de la hoja (`SHEET_ID`) y una clave de API válida (`API_KEY`).
+3. En `script.js` reemplaza los valores de `SHEET_ID` y `API_KEY` por los de tu proyecto.
+
 ## Paso a paso en n8n
 1. **Webhook**: crea un nuevo nodo *Webhook* con método `POST`. Obtén la URL y utilízala como `N8N_WEBHOOK_URL` en el servidor.
 2. **Set**: agrega un nodo *Set* para transformar los campos recibidos (`from`, `message`).

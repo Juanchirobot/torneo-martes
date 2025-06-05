@@ -167,51 +167,6 @@ function descargarJugadoresCSV() {
   a.click();
   URL.revokeObjectURL(a.href);
 }
-// Cargar jugadores desde GitHub
-async function cargarJugadoresDesdeGitHub() {
-  const url = 'jugadores.csv';
-  try {
-    const res = await fetch(url);
-    const text = await res.text();
-    const rows = text.trim().split("\n").slice(1);
-    jugadoresLista = rows.map(row => {
-      const [id, nombre, fecha] = row.split(",");
-      mapaJugadores[nombre] = parseInt(id);
-      if (parseInt(id) >= contadorID) contadorID = parseInt(id) + 1;
-      return { id: parseInt(id), jugador_nombre: nombre, fecha_alta: fecha };
-    });
-  } catch (err) {
-    console.error("Error al cargar jugadores:", err);
-  }
-}
-
-// Cargar resultados desde GitHub
-async function cargarCSVDesdeGitHub() {
-  const url = 'resultados.csv';
-  try {
-    const res = await fetch(url);
-    const text = await res.text();
-    const rows = text.trim().split("\n").slice(1);
-    rows.forEach(row => {
-      if (!row.trim()) return;
-      const [nombre_torneo, fecha_inicio_torneo, fecha_partido, nombre_partido, jugador_nombre, id_jugador, equipo, goles_partido, flageado] = row.split(",");
-      datosPartidos.push({
-        nombre_torneo,
-        fecha_inicio_torneo,
-        fecha_partido,
-        nombre_partido,
-        jugador_nombre,
-        id_jugador: parseInt(id_jugador),
-        equipo,
-        goles_partido: parseInt(goles_partido),
-        flageado: parseInt(flageado)
-      });
-    });
-    procesarDatos();
-  } catch (err) {
-    console.error("Error al cargar resultados:", err);
-  }
-}
 function procesarDatos() {
   const posiciones = {};
   const historial = [];
