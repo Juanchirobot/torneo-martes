@@ -2,63 +2,65 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Torneo de Amigos</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <nav class="sidebar">
-    <img src="banner.png" alt="Banner" class="banner-sidebar" />
-    <div class="sidebar-nav">
-      <button class="btn" onclick="mostrarTab('partidos')">🏠 Inicio</button>
-      <button class="btn" onclick="mostrarTab('formulario')">⚽ Cargar Partido</button>
-      <button class="btn" onclick="mostrarTab('estadisticas')">📊 Estadísticas</button>
-    </div>
-  </nav>
 
-  <div class="contenido-fondo">
-    <main>
-      <div class="tab" id="partidos">
-        <h1>Torneo de Amigos</h1>
-        <div id="ultimosPartidos"></div>
-        <h2>Tabla de Posiciones</h2>
-        <table><thead><tr><th>Nombre</th><th>Puntos</th><th>Goles</th><th>Partidos</th></tr></thead><tbody id="tablaPosiciones"></tbody></table>
-        <h2>Goleadores</h2>
-        <table><thead><tr><th>Nombre</th><th>Goles</th></tr></thead><tbody id="tablaGoleadores"></tbody></table>
-        <h2>Ranking Titulares</h2>
-        <table><thead><tr><th>Nombre</th><th>Presencias</th><th>%</th></tr></thead><tbody id="tablaTitulares"></tbody></table>
-        <h2>Historial</h2>
-        <table><thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead><tbody id="tablaHistorial"></tbody></table>
+  <header class="banner">
+    <h1>Torneo de Amigos ⚽</h1>
+    <p class="subtitulo">Estadísticas, partidos y figuras</p>
+  </header>
+
+  <main class="contenedor-principal">
+    <!-- Últimos partidos -->
+    <section id="ultimosPartidos" class="seccion">
+      <h2>Últimos Partidos</h2>
+      <div id="cardsPartidos"></div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="seccion">
+      <h2>Estadísticas</h2>
+      <div class="graficos">
+        <canvas id="graficoGolesPorFecha" height="150"></canvas>
+        <canvas id="graficoGoleadores" height="150"></canvas>
       </div>
+    </section>
 
-      <div class="tab" id="formulario" style="display:none;">
-        <h2>Cargar Nuevo Partido</h2>
-        <form id="formPartido">
-          <input type="text" id="nombre_torneo" placeholder="Nombre del torneo" required />
+    <!-- Formulario -->
+    <section id="formularioPartido" class="seccion">
+      <h2>Cargar Nuevo Partido</h2>
+      <form id="formPartido">
+        <div class="form-grupo">
+          <input type="text" id="nombre_torneo" placeholder="Nombre del Torneo" required />
           <input type="date" id="fecha_partido" required />
-          <input type="text" id="nombre_partido" placeholder="Nombre del partido" required />
-          <table><tbody id="tablaBlanco"></tbody></table>
-          <table><tbody id="tablaNegro"></tbody></table>
-          <button type="submit" class="btn primario">Guardar</button>
-        </form>
-        <br>
-        <form id="formJugador">
-          <input type="text" id="nuevoJugador" placeholder="Nombre del jugador" required />
-          <button type="submit" class="btn secundario">Agregar Jugador</button>
-        </form>
-      </div>
+          <input type="text" id="nombre_partido" placeholder="Nombre del Partido" required />
+        </div>
 
-      <div class="tab" id="estadisticas" style="display:none;">
-        <h2>Estadísticas del Torneo</h2>
-        <canvas id="graficoGolesPorMes" height="100"></canvas>
-        <br>
-        <canvas id="graficoRendimientoJugadores" height="100"></canvas>
-      </div>
-    </main>
-  </div>
+        <div class="equipos">
+          <div>
+            <h3>Equipo Blanco ⚪</h3>
+            <div id="equipoBlanco" class="form-equipo"></div>
+          </div>
+          <div>
+            <h3>Equipo Negro ⚫</h3>
+            <div id="equipoNegro" class="form-equipo"></div>
+          </div>
+        </div>
 
-  <div id="overlay"></div>
+        <button type="submit" class="btn primario">Guardar Partido</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Creado por Juanchirobot ⚙️</p>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
+
