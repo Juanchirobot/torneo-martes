@@ -85,10 +85,18 @@ function poblarFormulario() {
   });
 }
 // 📝 Guardar partido (versión de prueba)
-document.getElementById("formPartido").addEventListener("submit", (e) => {
-  e.preventDefault();
-  alert("La carga del partido se conectará con Google Sheets o n8n en el próximo paso.");
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("formPartido");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("La carga del partido se conectará con Google Sheets o n8n en el próximo paso.");
+    });
+  } else {
+    console.error("❌ No se encontró el formulario con id 'formPartido'");
+  }
 });
+
 
 // 🖼 Mostrar últimos partidos
 function renderUltimosPartidos() {
