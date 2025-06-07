@@ -3,55 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Torneo de Fútbol Individual</title>
-  <link rel="stylesheet" href="style.css"/>
+  <title>Torneo de Fútbol</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="loader">
-  <div class="loader-circle"></div>
-</div>
+  <div id="loader"><div class="loader-circle"></div></div>
 
+  <header>
+    <h1>Torneo Apertura</h1>
+  </header>
 
-  <div id="fondo"></div>
+  <main>
+    <section id="cardsPartidos" class="tarjetas"></section>
 
-  <div class="contenedor-principal">
-    <h1 class="titulo">🏆 Torneo de Fútbol</h1>
-
-    <section id="ultimos">
-      <h2>Últimos Partidos</h2>
-      <div id="cardsPartidos" class="cards"></div>
-    </section>
-    <section id="formulario">
+    <section class="formulario-container">
       <h2>Cargar Nuevo Partido</h2>
       <form id="formPartido">
-        <input type="text" id="nombre_torneo" placeholder="Nombre del Torneo" required />
+        <input type="text" id="nombre_torneo" placeholder="Nombre Torneo" required />
         <input type="date" id="fecha_partido" required />
         <input type="text" id="nombre_partido" placeholder="Nombre del Partido" required />
 
         <div class="equipos">
           <div>
-            <h3>Equipo Blanco ⚪</h3>
-            <div id="equipoBlanco"></div>
+            <h3>Equipo Blanco</h3>
+            <div id="equipoBlanco" class="equipo-grid"></div>
           </div>
           <div>
-            <h3>Equipo Negro ⚫</h3>
-            <div id="equipoNegro"></div>
+            <h3>Equipo Negro</h3>
+            <div id="equipoNegro" class="equipo-grid"></div>
           </div>
         </div>
 
-        <button type="submit" class="boton">Guardar Partido</button>
+        <button type="submit">Registrar Partido</button>
       </form>
     </section>
 
-    <section id="graficos">
+    <section class="graficos">
       <h2>Estadísticas del Torneo</h2>
-      <div class="graficos">
-        <canvas id="graficoGolesPorFecha" height="150"></canvas>
-        <canvas id="graficoGoleadores" height="150"></canvas>
-      </div>
+      <canvas id="graficoPosiciones" width="400" height="250"></canvas>
+      <canvas id="graficoGoleadores" width="400" height="250"></canvas>
     </section>
-  </div>
+  </main>
 
   <script src="script.js"></script>
 </body>
