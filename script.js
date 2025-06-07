@@ -173,3 +173,60 @@ function renderGraficoPosiciones() {
     },
   });
 }
+function calcularEstadisticas(tipo) {
+  const datos = {};
+
+  partidos.forEach((p) => {
+    if (!p.jugador) return;
+    if (!datos[p.jugador]) datos[p.jugador] = { puntos: 0, goles: 0, partidos: 0 };
+
+    datos[p.jugador].partidos += 1;
+    datos[p.jugador].goles += p.goles;
+    datos[p.jugador].puntos += p.goles + 1; // 1 punto por participar + goles
+  });
+
+  const ordenados = Object.entries(datos)
+    .sort((a, b) => b[1][tipo] - a[1][tipo])
+    .slice(0, 10);
+
+  return {
+    labels: ordenados.map(e => e[0]),
+    data: ordenados.map(e => e[1][tipo]),
+    label: tipo.charAt(0).toUpperCase() + tipo.slice(1)
+  };
+}
+
+let chartJugadores;
+
+function actualizarGrafico(tipo = "puntos") {
+  const ctx = document.getElementById("graficoJugadores").getContext("2d");
+  const { labels, data, label } = calcularEstadisticas(tipo);
+
+  if (chartJugadores) chartJugadores.destroy();
+
+  chartJugadores = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label,
+        data,
+        backgroundColor: "#26c6da"
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+// Filtro selector dinámico
+document.getElementById("tipoGrafico").addEventListener("change", (e) => {
+  actualizarGrafico(e.target.value);
+});
