@@ -5,8 +5,8 @@ let contadorID = 1;
 let nuevosJugadores = [];
 let datosFormacion = [];
 
-const SHEET_ID = "<>";
-const API_KEY = "<>";
+const SHEET_ID = "15SFBZPl54ZaYNrTeog0COivI0e9wI_eHLcZJTaNUz7Y";
+const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
 
 function mostrarTab(id) {
   document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
