@@ -31,7 +31,6 @@ async function cargarPartidos() {
   renderUltimosPartidos();
   renderGraficos();
 }
-
 // 📋 Poblar selects de formulario
 function poblarFormulario() {
   ["Blanco", "Negro"].forEach(equipo => {
@@ -85,7 +84,7 @@ function renderUltimosPartidos() {
     });
 
     return `
-      <div>
+      <div class="card-partido">
         <strong>${clave}</strong><br/>
         ⚪ ${golesBlanco} vs ${golesNegro} ⚫<br/>
         🥅 Goleador: ${goleador.jugador}<br/>
@@ -95,7 +94,6 @@ function renderUltimosPartidos() {
 
   document.getElementById("cardsPartidos").innerHTML = cards.join("");
 }
-
 // 📊 Renderizar gráficos con Chart.js
 function renderGraficos() {
   const porFecha = {};
@@ -163,14 +161,19 @@ function renderGraficos() {
   });
 }
 
-// 🚀 Iniciar
+// 🚀 Iniciar carga desde Sheets
 (async () => {
   await cargarJugadores();
   await cargarPartidos();
 })();
 
-// 📝 Guardar nuevo partido (futuro uso con Sheets/n8n)
-document.getElementById("formPartido").addEventListener("submit", e => {
-  e.preventDefault();
-  alert("Funcionalidad de carga se conectará con Google Sheets o n8n en el próximo paso.");
+// 📝 Cargar nuevo partido (placeholder)
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("formPartido");
+  if (form) {
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      alert("Funcionalidad de carga se conectará con Google Sheets o n8n en el próximo paso.");
+    });
+  }
 });
