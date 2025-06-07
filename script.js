@@ -4,7 +4,6 @@ const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
 let jugadores = [];
 let partidos = [];
 
-// 🔄 Cargar jugadores
 async function cargarJugadores() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`;
   const res = await fetch(url);
@@ -13,7 +12,6 @@ async function cargarJugadores() {
   poblarFormulario();
 }
 
-// 🔄 Cargar partidos
 async function cargarPartidos() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`;
   const res = await fetch(url);
@@ -31,7 +29,6 @@ async function cargarPartidos() {
   renderUltimosPartidos();
   renderGraficos();
 }
-// 📋 Poblar selects de formulario
 function poblarFormulario() {
   ["Blanco", "Negro"].forEach(equipo => {
     const contenedor = document.getElementById("equipo" + equipo);
@@ -59,7 +56,6 @@ function poblarFormulario() {
   });
 }
 
-// 🖼 Mostrar últimos partidos
 function renderUltimosPartidos() {
   const agrupados = {};
 
@@ -84,7 +80,7 @@ function renderUltimosPartidos() {
     });
 
     return `
-      <div class="card-partido">
+      <div class="card">
         <strong>${clave}</strong><br/>
         ⚪ ${golesBlanco} vs ${golesNegro} ⚫<br/>
         🥅 Goleador: ${goleador.jugador}<br/>
@@ -94,17 +90,14 @@ function renderUltimosPartidos() {
 
   document.getElementById("cardsPartidos").innerHTML = cards.join("");
 }
-// 📊 Renderizar gráficos con Chart.js
 function renderGraficos() {
   const porFecha = {};
   const porJugador = {};
 
   partidos.forEach(p => {
-    // goles por fecha
     if (!porFecha[p.fecha]) porFecha[p.fecha] = 0;
     porFecha[p.fecha] += p.goles;
 
-    // goles por jugador
     if (!porJugador[p.jugador]) porJugador[p.jugador] = 0;
     porJugador[p.jugador] += p.goles;
   });
@@ -161,19 +154,14 @@ function renderGraficos() {
   });
 }
 
-// 🚀 Iniciar carga desde Sheets
+// 🚀 Iniciar sistema
 (async () => {
   await cargarJugadores();
   await cargarPartidos();
 })();
 
-// 📝 Cargar nuevo partido (placeholder)
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("formPartido");
-  if (form) {
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      alert("Funcionalidad de carga se conectará con Google Sheets o n8n en el próximo paso.");
-    });
-  }
+// 📝 Guardar partido (próxima fase)
+document.getElementById("formPartido").addEventListener("submit", e => {
+  e.preventDefault();
+  alert("Funcionalidad de guardar partido: se conectará a Google Sheets o n8n.");
 });
