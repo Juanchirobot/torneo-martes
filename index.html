@@ -3,64 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Torneo de Amigos</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Torneo de Fútbol Individual</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-  <header class="banner">
-    <h1>Torneo de Amigos ⚽</h1>
-    <p class="subtitulo">Estadísticas, partidos y figuras</p>
-  </header>
+  <div id="fondo"></div>
 
-  <main class="contenedor-principal">
-    <!-- Últimos partidos -->
-    <section id="ultimosPartidos" class="seccion">
+  <div class="contenedor-principal">
+    <h1 class="titulo">🏆 Torneo de Fútbol</h1>
+
+    <section id="ultimos">
       <h2>Últimos Partidos</h2>
-      <div id="cardsPartidos"></div>
+      <div id="cardsPartidos" class="cards"></div>
+    </section>
+    <section id="formulario">
+      <h2>Cargar Nuevo Partido</h2>
+      <form id="formPartido">
+        <input type="text" id="nombre_torneo" placeholder="Nombre del Torneo" required />
+        <input type="date" id="fecha_partido" required />
+        <input type="text" id="nombre_partido" placeholder="Nombre del Partido" required />
+
+        <div class="equipos">
+          <div>
+            <h3>Equipo Blanco ⚪</h3>
+            <div id="equipoBlanco"></div>
+          </div>
+          <div>
+            <h3>Equipo Negro ⚫</h3>
+            <div id="equipoNegro"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="boton">Guardar Partido</button>
+      </form>
     </section>
 
-    <!-- Dashboard -->
-    <section id="dashboard" class="seccion">
-      <h2>Estadísticas</h2>
+    <section id="graficos">
+      <h2>Estadísticas del Torneo</h2>
       <div class="graficos">
         <canvas id="graficoGolesPorFecha" height="150"></canvas>
         <canvas id="graficoGoleadores" height="150"></canvas>
       </div>
     </section>
-
-    <!-- Formulario -->
-    <section id="formularioPartido" class="seccion">
-      <h2>Cargar Nuevo Partido</h2>
-      <form id="formPartido">
-        <div class="form-grupo">
-          <input type="text" id="nombre_torneo" placeholder="Nombre del Torneo" required />
-          <input type="date" id="fecha_partido" required />
-          <input type="text" id="nombre_partido" placeholder="Nombre del Partido" required />
-        </div>
-
-        <div class="equipos">
-          <div>
-            <h3>Equipo Blanco ⚪</h3>
-            <div id="equipoBlanco" class="form-equipo"></div>
-          </div>
-          <div>
-            <h3>Equipo Negro ⚫</h3>
-            <div id="equipoNegro" class="form-equipo"></div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn primario">Guardar Partido</button>
-      </form>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <p>Creado por Juanchirobot ⚙️</p>
-  </footer>
+  </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
