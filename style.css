@@ -128,3 +128,54 @@ section {
   font-weight: bold;
   border-radius: 5px;
 }
+select option:first-child {
+  color: #999;
+}
+
+select:invalid {
+  color: #999;
+}
+
+/* Placeholder de selección por defecto */
+select:required:invalid {
+  color: gray;
+}
+
+/* Ajustar tamaño del header */
+header {
+  padding: 0.5rem;
+  font-size: 1.5rem;
+}
+
+/* Ajuste visual más sutil para cards */
+.card, #cardsPartidos div {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-left: 4px solid #1565c0;
+}
+
+/* Estética más liviana para selects y inputs internos */
+.equipos select,
+.equipos input[type="number"] {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #000;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .equipos {
+    flex-direction: column;
+  }
+
+  .equipos > div {
+    flex: 1 1 100%;
+  }
+
+  main {
+    padding: 0.5rem;
+  }
+
+  header {
+    font-size: 1.2rem;
+  }
+}
