@@ -157,3 +157,56 @@ document.querySelectorAll(".btnFiltroGrafico").forEach(btn => {
   await cargarPartidos();
   renderGraficos(); // por defecto puntos
 })();
+document.getElementById("formPartido").addEventListener("submit", async e => {
+  e.preventDefault();
+  const torneo = document.getElementById("nombre_torneo").value;
+  const fecha = document.getElementById("fecha_partido").value;
+  const partido = document.getElementById("nombre_partido").value;
+
+  const filasBlanco = [...document.querySelectorAll("#equipoBlanco select")];
+  const golesBlanco = [...document.querySelectorAll("#equipoBlanco input")];
+  const filasNegro = [...document.querySelectorAll("#equipoNegro select")];
+  const golesNegro = [...document.querySelectorAll("#equipoNegro input")];
+
+  const jugadoresPartido = [];
+
+  for (let i = 0; i < 5; i++) {
+    jugadoresPartido.push({
+      nombre_torneo: torneo,
+      fecha_inicio_torneo: fecha,
+      fecha_partido: fecha,
+      nombre_partido: partido,
+      jugador_nombre: filasBlanco[i].value,
+      id_jugador: buscarID(filasBlanco[i].value),
+      equipo: "Blanco",
+      goles_partido: parseInt(golesBlanco[i].value),
+      flageado: 1
+    });
+    jugadoresPartido.push({
+      nombre_torneo: torneo,
+      fecha_inicio_torneo: fecha,
+      fecha_partido: fecha,
+      nombre_partido: partido,
+      jugador_nombre: filasNegro[i].value,
+      id_jugador: buscarID(filasNegro[i].value),
+      equipo: "Negro",
+      goles_partido: parseInt(golesNegro[i].value),
+      flageado: 1
+    });
+  }
+
+  for (const jugador of jugadoresPartido) {
+    await fetch("https://juanchi.app.n8n.cloud/webhook/cargar-partido", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(jugador)
+    });
+  }
+
+  alert("Partido enviado correctamente.");
+  e.target.reset();
+});
+function buscarID(nombre) {
+  const jugador = jugadores.find(j => j.nombre === nombre);
+  return jugador ? jugador.id : "NA";
+}
