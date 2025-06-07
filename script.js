@@ -5,6 +5,7 @@ const WEBHOOK_URL = "https://juanchi.app.n8n.cloud/webhook-test/cargar-partido";
 let jugadores = [];
 let partidos = [];
 
+// 🔄 Cargar jugadores desde Google Sheets
 async function cargarJugadores() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`;
   try {
@@ -16,16 +17,18 @@ async function cargarJugadores() {
     console.error("Error al cargar jugadores:", err);
   }
 }
-// CARGAR NUEVO JUGADOR
+// 🧩 Modal para agregar jugador nuevo
 function abrirModalJugador() {
   document.getElementById("modalJugador").style.display = "flex";
   document.getElementById("overlay").style.display = "block";
 }
+
 function cerrarModalJugador() {
   document.getElementById("modalJugador").style.display = "none";
   document.getElementById("overlay").style.display = "none";
   document.getElementById("nuevoJugador").value = "";
 }
+
 document.getElementById("formJugador").addEventListener("submit", e => {
   e.preventDefault();
   const nombre = document.getElementById("nuevoJugador").value.trim();
@@ -36,9 +39,12 @@ document.getElementById("formJugador").addEventListener("submit", e => {
   cerrarModalJugador();
 });
 function poblarFormulario() {
+  const selectsOcupados = [];
+
   ["Blanco", "Negro"].forEach(equipo => {
     const contenedor = document.getElementById("equipo" + equipo);
     contenedor.innerHTML = "";
+
     for (let i = 0; i < 5; i++) {
       const fila = document.createElement("div");
       fila.className = "filaJugador";
@@ -50,11 +56,19 @@ function poblarFormulario() {
       defaultOption.disabled = true;
       defaultOption.selected = true;
       select.appendChild(defaultOption);
+
       jugadores.forEach(j => {
-        const opt = document.createElement("option");
-        opt.value = j.nombre;
-        opt.textContent = j.nombre;
-        select.appendChild(opt);
+        if (!selectsOcupados.includes(j.nombre)) {
+          const opt = document.createElement("option");
+          opt.value = j.nombre;
+          opt.textContent = j.nombre;
+          select.appendChild(opt);
+        }
+      });
+
+      select.addEventListener("change", () => {
+        selectsOcupados.push(select.value);
+        poblarFormulario(); // repinta para eliminar el jugador seleccionado en el otro equipo
       });
 
       const input = document.createElement("input");
@@ -69,54 +83,6 @@ function poblarFormulario() {
     }
   });
 }
-document.addEventListener("DOMContentLoaded", () => {
-  cargarJugadores();
-  document.getElementById("formPartido").addEventListener("submit", async e => {
-    e.preventDefault();
-
-    const torneo = document.getElementById("nombre_torneo").value;
-    const fecha = document.getElementById("fecha_partido").value;
-    const nombrePartido = document.getElementById("nombre_partido").value;
-
-    const datos = [];
-    ["Blanco", "Negro"].forEach(equipo => {
-      const filas = document.querySelectorAll(`#equipo${equipo} .filaJugador`);
-      filas.forEach(fila => {
-        const jugador = fila.querySelector("select").value;
-        const goles = parseInt(fila.querySelector("input").value) || 0;
-        const id_jugador = jugadores.find(j => j.nombre === jugador)?.id || 0;
-        datos.push({
-          nombre_torneo: torneo,
-          fecha_inicio_torneo: fecha,
-          fecha_partido: fecha,
-          nombre_partido: nombrePartido,
-          jugador_nombre: jugador,
-          id_jugador,
-          equipo,
-          goles_partido: goles,
-          flageado: 1
-        });
-      });
-    });
-
-    try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-      });
-      if (res.ok) {
-        alert("✅ Partido cargado correctamente");
-        e.target.reset();
-      } else {
-        alert("❌ Error al cargar el partido. Verifica el webhook o los datos");
-      }
-    } catch (err) {
-      console.error("Error enviando a webhook:", err);
-      alert("❌ No se pudo conectar con el servidor");
-    }
-  });
-});
 // 🖼 Mostrar últimos partidos
 function renderUltimosPartidos() {
   const agrupados = {};
@@ -153,7 +119,6 @@ function renderUltimosPartidos() {
 
   document.getElementById("cardsPartidos").innerHTML = cards.join("");
 }
-
 // 📊 Renderizar gráfico de posiciones
 function renderGraficoPosiciones() {
   const puntos = {};
@@ -161,14 +126,16 @@ function renderGraficoPosiciones() {
   partidos.forEach((p) => {
     if (!p.jugador) return;
     if (!puntos[p.jugador]) puntos[p.jugador] = 0;
-    puntos[p.jugador] += p.goles + (p.equipo === "Blanco" || p.equipo === "Negro" ? 1 : 0);
+    puntos[p.jugador] += p.goles + 1; // 1 punto por participar
   });
 
   const top = Object.entries(puntos)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  const ctx = document.getElementById("graficoPosiciones").getContext("2d");
+  const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
+  if (!ctx) return;
+
   new Chart(ctx, {
     type: "bar",
     data: {
@@ -192,16 +159,17 @@ function renderGraficoPosiciones() {
     },
   });
 }
+
+// 📊 Cálculo de estadísticas para gráfico filtrable
 function calcularEstadisticas(tipo) {
   const datos = {};
 
   partidos.forEach((p) => {
     if (!p.jugador) return;
     if (!datos[p.jugador]) datos[p.jugador] = { puntos: 0, goles: 0, partidos: 0 };
-
     datos[p.jugador].partidos += 1;
     datos[p.jugador].goles += p.goles;
-    datos[p.jugador].puntos += p.goles + 1; // 1 punto por participar + goles
+    datos[p.jugador].puntos += p.goles + 1;
   });
 
   const ordenados = Object.entries(datos)
@@ -214,11 +182,16 @@ function calcularEstadisticas(tipo) {
     label: tipo.charAt(0).toUpperCase() + tipo.slice(1)
   };
 }
-
 let chartJugadores;
 
+// 🔄 Actualizar gráfico dinámico según filtro
 function actualizarGrafico(tipo = "puntos") {
-  const ctx = document.getElementById("graficoJugadores").getContext("2d");
+  const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
+  if (!ctx) {
+    console.warn("⚠️ No se encontró el canvas para el gráfico");
+    return;
+  }
+
   const { labels, data, label } = calcularEstadisticas(tipo);
 
   if (chartJugadores) chartJugadores.destroy();
@@ -245,7 +218,21 @@ function actualizarGrafico(tipo = "puntos") {
   });
 }
 
-// Filtro selector dinámico
-document.getElementById("tipoGrafico").addEventListener("change", (e) => {
-  actualizarGrafico(e.target.value);
+// 🎛️ Listener para selector de tipo de gráfico
+document.addEventListener("DOMContentLoaded", () => {
+  const selector = document.getElementById("tipoGrafico");
+  if (selector) {
+    selector.addEventListener("change", (e) => {
+      actualizarGrafico(e.target.value);
+    });
+  }
+});
+// 🧩 Función auxiliar para capitalizar etiquetas de estadísticas
+function capitalizar(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// 🔄 Recalcular estadísticas y actualizar gráfico al iniciar
+document.addEventListener("DOMContentLoaded", () => {
+  actualizarGrafico("puntos");
 });
