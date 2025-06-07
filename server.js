@@ -1,6 +1,8 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const { MessagingResponse } = require('twilio').twiml;
+const SHEET_ID = "15SFBZPl54ZaYNrTeog0COivI0e9wI_eHLcZJTaNUz7Y";
+const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
