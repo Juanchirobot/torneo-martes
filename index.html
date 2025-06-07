@@ -1,66 +1,60 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Torneo Martes</title>
-  <link rel="stylesheet" href="style.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <header>
-    <img src="banner.png" alt="Banner del Torneo" class="banner" />
-    <h1>Torneo de los Martes</h1>
-  </header>
+<main>
+  <section class="formulario">
+    <h2>Cargar Nuevo Partido</h2>
+    <form id="formPartido">
+      <input type="text" id="nombre_torneo" placeholder="Nombre del torneo" required />
+      <input type="date" id="fecha_partido" required />
+      <input type="text" id="nombre_partido" placeholder="Nombre del partido" required />
 
-  <main>
-    <section class="formulario">
-      <h2>Cargar Nuevo Partido</h2>
-      <form id="formPartido">
-        <input type="text" id="nombre_torneo" placeholder="Nombre del torneo" required/>
-        <input type="date" id="fecha_partido" required/>
-        <input type="text" id="nombre_partido" placeholder="Nombre del partido" required/>
-
-        <div class="equipos">
-          <div class="equipo">
-            <h3>⚪ Equipo Blanco</h3>
-            <div id="equipoBlanco" class="jugadores"></div>
-          </div>
-
-          <div class="equipo">
-            <h3>⚫ Equipo Negro</h3>
-            <div id="equipoNegro" class="jugadores"></div>
-          </div>
+      <div class="equipos">
+        <div class="equipo">
+          <h3>⚪ Equipo Blanco</h3>
+          <div id="equipoBlanco" class="jugadores"></div>
         </div>
 
-        <button type="submit">Guardar Partido</button>
-      </form>
-    </section>
-    <section class="ultimos-partidos">
-      <h2>Últimos Partidos</h2>
-      <div id="cardsPartidos" class="cards"></div>
-    </section>
-
-    <section class="graficos">
-      <h2>Estadísticas</h2>
-      <div class="filtro-grafico">
-        <label for="tipoGrafico">Ver por:</label>
-        <select id="tipoGrafico">
-          <option value="puntos">Puntos</option>
-          <option value="goles">Goles</option>
-          <option value="partidos">Participaciones</option>
-        </select>
+        <div class="equipo">
+          <h3>⚫ Equipo Negro</h3>
+          <div id="equipoNegro" class="jugadores"></div>
+        </div>
       </div>
 
-      <canvas id="graficoJugadores" width="400" height="200"></canvas>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2025 Torneo de los Martes</p>
-  </footer>
+      <button type="submit">Guardar Partido</button>
+    </form>
 
-  <div id="overlay" class="overlay"></div>
+    <!-- Botón para abrir modal de nuevo jugador -->
+    <div class="agregar-jugador-wrapper">
+      <button type="button" onclick="abrirModalJugador()">+ Agregar Jugador</button>
+    </div>
+  </section>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <section class="ultimos-partidos">
+    <h2>Últimos Partidos</h2>
+    <div id="cardsPartidos" class="cards"></div>
+  </section>
+
+  <section class="graficos">
+    <h2>Estadísticas</h2>
+    <div class="filtro-grafico">
+      <label for="tipoGrafico">Ver por:</label>
+      <select id="tipoGrafico">
+        <option value="puntos">Puntos</option>
+        <option value="goles">Goles</option>
+        <option value="partidos">Participaciones</option>
+      </select>
+    </div>
+
+    <canvas id="graficoPosiciones" width="400" height="200"></canvas>
+  </section>
+
+  <!-- Modal para nuevo jugador -->
+  <div id="modalJugador" class="modal">
+    <form id="formJugador">
+      <h3>Nuevo Jugador</h3>
+      <input type="text" id="nuevoJugador" placeholder="Nombre del jugador" required />
+      <div class="modal-buttons">
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="cerrarModalJugador()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</main>
