@@ -165,3 +165,6 @@ document.getElementById("formPartido").addEventListener("submit", e => {
   e.preventDefault();
   alert("Funcionalidad de guardar partido: se conectará a Google Sheets o n8n.");
 });
+window.addEventListener("load", () => {
+  document.getElementById("loader").style.display = "none";
+});
