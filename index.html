@@ -2,65 +2,65 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Torneo Martes</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>Torneo Martes</h1>
+    <img src="banner.png" alt="Banner del Torneo" class="banner" />
+    <h1>Torneo de los Martes</h1>
   </header>
 
   <main>
-    <section class="formulario-container">
+    <section class="formulario">
       <h2>Cargar Nuevo Partido</h2>
       <form id="formPartido">
-        <label for="nombre_torneo">Nombre del Torneo:</label>
-        <input type="text" id="nombre_torneo" name="nombre_torneo" required placeholder="Ej. Torneo Apertura 2025" />
+        <input type="text" id="nombre_torneo" placeholder="Nombre del torneo" required/>
+        <input type="date" id="fecha_partido" required/>
+        <input type="text" id="nombre_partido" placeholder="Nombre del partido" required/>
 
-        <label for="fecha_partido">Fecha del Partido:</label>
-        <input type="date" id="fecha_partido" name="fecha_partido" required />
-
-        <label for="nombre_partido">Nombre del Partido:</label>
-        <input type="text" id="nombre_partido" name="nombre_partido" required placeholder="Ej. Fecha 1" />
-        <div class="equipos-formulario">
-          <div class="equipo" id="equipoBlanco">
-            <h3>Equipo Blanco ⚪</h3>
-            <!-- Jugadores de Blanco se cargarán dinámicamente aquí -->
+        <div class="equipos">
+          <div class="equipo">
+            <h3>⚪ Equipo Blanco</h3>
+            <div id="equipoBlanco" class="jugadores"></div>
           </div>
-          <div class="equipo" id="equipoNegro">
-            <h3>Equipo Negro ⚫</h3>
-            <!-- Jugadores de Negro se cargarán dinámicamente aquí -->
+
+          <div class="equipo">
+            <h3>⚫ Equipo Negro</h3>
+            <div id="equipoNegro" class="jugadores"></div>
           </div>
         </div>
 
-        <button type="submit" class="btn cargar">Cargar Partido</button>
+        <button type="submit">Guardar Partido</button>
       </form>
     </section>
-    <section class="resultados">
+    <section class="ultimos-partidos">
       <h2>Últimos Partidos</h2>
-      <div id="cardsPartidos" class="cards-partidos"></div>
+      <div id="cardsPartidos" class="cards"></div>
     </section>
 
     <section class="graficos">
-      <h2>Estadísticas del Torneo</h2>
-      <div class="filtro-graficos">
-        <label for="filtroGrafico">Ver por:</label>
-        <select id="filtroGrafico">
+      <h2>Estadísticas</h2>
+      <div class="filtro-grafico">
+        <label for="tipoGrafico">Ver por:</label>
+        <select id="tipoGrafico">
           <option value="puntos">Puntos</option>
           <option value="goles">Goles</option>
           <option value="partidos">Participaciones</option>
         </select>
       </div>
-      <canvas id="graficoJugadores"></canvas>
-    </section>
-    <footer>
-      <p>🏆 Torneo de Fútbol de Amigos – Web interactiva creada por Juanchi</p>
-    </footer>
 
-    <div id="overlay" class="overlay"></div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
-  </body>
+      <canvas id="graficoJugadores" width="400" height="200"></canvas>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Torneo de los Martes</p>
+  </footer>
+
+  <div id="overlay" class="overlay"></div>
+
+  <script src="script.js"></script>
+</body>
 </html>
