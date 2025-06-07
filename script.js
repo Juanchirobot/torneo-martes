@@ -4,6 +4,13 @@ const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
 let jugadores = [];
 let partidos = [];
 
+window.addEventListener("load", async () => {
+  await cargarJugadores();
+  await cargarPartidos();
+  document.getElementById("loader").style.display = "none";
+});
+
+// 🔄 Cargar jugadores
 async function cargarJugadores() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`;
   const res = await fetch(url);
@@ -12,6 +19,7 @@ async function cargarJugadores() {
   poblarFormulario();
 }
 
+// 🔄 Cargar partidos
 async function cargarPartidos() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`;
   const res = await fetch(url);
@@ -29,14 +37,23 @@ async function cargarPartidos() {
   renderUltimosPartidos();
   renderGraficos();
 }
+// 📋 Poblar selects de formulario (grilla vertical)
 function poblarFormulario() {
   ["Blanco", "Negro"].forEach(equipo => {
     const contenedor = document.getElementById("equipo" + equipo);
     contenedor.innerHTML = "";
     for (let i = 0; i < 5; i++) {
       const div = document.createElement("div");
+      div.className = "jugador-input";
 
       const select = document.createElement("select");
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "";
+      defaultOpt.textContent = "Selecciona jugador";
+      defaultOpt.disabled = true;
+      defaultOpt.selected = true;
+      select.appendChild(defaultOpt);
+
       jugadores.forEach(j => {
         const opt = document.createElement("option");
         opt.value = j.nombre;
@@ -56,9 +73,9 @@ function poblarFormulario() {
   });
 }
 
+// 🖼 Mostrar últimos partidos
 function renderUltimosPartidos() {
   const agrupados = {};
-
   partidos.forEach(p => {
     const clave = `${p.fecha} - ${p.partido}`;
     if (!agrupados[clave]) agrupados[clave] = [];
@@ -83,63 +100,36 @@ function renderUltimosPartidos() {
       <div class="card">
         <strong>${clave}</strong><br/>
         ⚪ ${golesBlanco} vs ${golesNegro} ⚫<br/>
-        🥅 Goleador: ${goleador.jugador}<br/>
+        🥅 Goleador: ${goleador.jugador}
       </div>
     `;
   });
 
   document.getElementById("cardsPartidos").innerHTML = cards.join("");
 }
+
+// 📊 Renderizar gráfico de posiciones
 function renderGraficos() {
-  const porFecha = {};
-  const porJugador = {};
+  const puntosPorJugador = {};
 
   partidos.forEach(p => {
-    if (!porFecha[p.fecha]) porFecha[p.fecha] = 0;
-    porFecha[p.fecha] += p.goles;
-
-    if (!porJugador[p.jugador]) porJugador[p.jugador] = 0;
-    porJugador[p.jugador] += p.goles;
+    const puntos = p.goles > 0 ? 1 : 0;
+    if (!puntosPorJugador[p.jugador]) puntosPorJugador[p.jugador] = 0;
+    puntosPorJugador[p.jugador] += puntos;
   });
 
-  const fechas = Object.keys(porFecha).sort();
-  const goles = fechas.map(f => porFecha[f]);
-
-  new Chart(document.getElementById("graficoGolesPorFecha"), {
-    type: "line",
-    data: {
-      labels: fechas,
-      datasets: [{
-        label: "Goles Totales",
-        data: goles,
-        borderColor: "#0d47a1",
-        fill: false,
-        tension: 0.2
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        x: { title: { display: true, text: "Fecha" } },
-        y: { title: { display: true, text: "Goles" }, beginAtZero: true }
-      }
-    }
-  });
-
-  const topGoleadores = Object.entries(porJugador)
+  const top = Object.entries(puntosPorJugador)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
+    .slice(0, 10);
 
-  new Chart(document.getElementById("graficoGoleadores"), {
+  new Chart(document.getElementById("graficoPosiciones"), {
     type: "bar",
     data: {
-      labels: topGoleadores.map(e => e[0]),
+      labels: top.map(e => e[0]),
       datasets: [{
-        label: "Goles",
-        data: topGoleadores.map(e => e[1]),
-        backgroundColor: "#1976d2"
+        label: "Puntos",
+        data: top.map(e => e[1]),
+        backgroundColor: "#00695c"
       }]
     },
     options: {
@@ -154,17 +144,9 @@ function renderGraficos() {
   });
 }
 
-// 🚀 Iniciar sistema
-(async () => {
-  await cargarJugadores();
-  await cargarPartidos();
-})();
-
-// 📝 Guardar partido (próxima fase)
+// 🚀 Iniciar carga al enviar (placeholder, se conecta en el siguiente paso)
 document.getElementById("formPartido").addEventListener("submit", e => {
   e.preventDefault();
-  alert("Funcionalidad de guardar partido: se conectará a Google Sheets o n8n.");
+  alert("En el próximo paso conectaremos esta carga a Google Sheets o n8n.");
 });
-window.addEventListener("load", () => {
-  document.getElementById("loader").style.display = "none";
-});
+
