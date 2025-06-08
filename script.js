@@ -323,3 +323,54 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+document.getElementById('formPartido')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const torneo = document.getElementById('nombre_torneo').value.trim();
+  const fecha = document.getElementById('fecha_partido').value;
+  const partido = document.getElementById('nombre_partido').value.trim();
+
+  const blancos = obtenerJugadores('Blanco');
+  const negros = obtenerJugadores('Negro');
+
+  if (blancos.length < 5 || negros.length < 5) {
+    return alert('Debes seleccionar 5 jugadores por equipo');
+  }
+
+  const jugadores = [...blancos, ...negros].map(j => ({
+    ...j, torneo, fecha, partido,
+    flageado: 1,
+    llego_tarde: j.llegoTarde ? 1 : 0,
+    minutos_tarde: j.minutosTarde || 0
+  }));
+
+  const idFigura = document.getElementById('selectFigura').value;
+  const figura = jugadores.find(j => j.jugador === idFigura);
+  const formacion = {
+    fecha_partido: fecha,
+    nombre_partido: partido,
+    votante: 'web',
+    figura_votada: 'voto manual',
+    id_jugador_votado: figura ? figura.id : ''
+  };
+
+  const nuevoJugador = jugadores.find(j => j.nuevo === true) || null;
+
+  try {
+    await fetch(WEBHOOK_PARTIDO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jugadores,
+        formacion,
+        nuevoJugador
+      })
+    });
+    alert('Partido y figura cargados correctamente');
+    document.getElementById('formPartido').reset();
+    document.querySelector('.equipos-grid').style.display = 'none';
+  } catch (err) {
+    console.error('Error enviando datos:', err);
+    alert('Error al enviar los datos');
+  }
+});
+
