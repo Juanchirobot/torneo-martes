@@ -1,6 +1,7 @@
 const SHEET_ID = "15SFBZPl54ZaYNrTeog0COivI0e9wI_eHLcZJTaNUz7Y";
 const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
-const WEBHOOK_URL = "https://juanchi.app.n8n.cloud/webhook-test/cargar-partido";
+const WEBHOOK_PARTIDO_URL = "https://juanchi.app.n8n.cloud/webhook-test/cargar-partido";
+const WEBHOOK_VOTO_URL = "https://juanchi.app.n8n.cloud/webhook-test/cargar-voto";
 
 let jugadores = [];
 let partidos = [];
@@ -11,8 +12,7 @@ async function cargarJugadores() {
   try {
     const res = await fetch(url);
     const data = await res.json();
-    jugadores = data.values.slice(1).map(([id, nombre]) => ({ id: parseInt(id), nombre }));
-    poblarFormulario();
+    jugadores = data.values.slice(1).map(([id, nombre, tel]) => ({ id: parseInt(id), nombre, tel }));
   } catch (err) {
     console.error("Error al cargar jugadores:", err);
   }
@@ -34,7 +34,7 @@ document.getElementById("formJugador").addEventListener("submit", e => {
   const nombre = document.getElementById("nuevoJugador").value.trim();
   if (!nombre) return alert("El nombre no puede estar vacío");
   const nuevoID = jugadores.length > 0 ? jugadores[jugadores.length - 1].id + 1 : 1;
-  jugadores.push({ id: nuevoID, nombre });
+  jugadores.push({ id: nuevoID, nombre, tel: '' });
   poblarFormulario();
   cerrarModalJugador();
 });
@@ -83,6 +83,86 @@ function poblarFormulario() {
     }
   });
 }
+
+function obtenerJugadores(equipo) {
+  return Array.from(
+    document.querySelectorAll(`#equipo${equipo} .filaJugador`)
+  ).map((fila) => {
+    const jugador = fila.querySelector('select').value;
+    const goles = parseInt(fila.querySelector('input').value || '0');
+    const tel = jugadores.find(j => j.nombre === jugador)?.tel || '';
+    return { equipo, jugador, goles, tel };
+  });
+}
+
+function prepararVotacion(jugadoresPartido) {
+  const select = document.getElementById('selectFigura');
+  if (!select) return;
+  select.innerHTML = '';
+  jugadoresPartido.forEach(j => {
+    const opt = document.createElement('option');
+    opt.value = j.jugador;
+    opt.textContent = j.jugador;
+    select.appendChild(opt);
+  });
+  document.getElementById('seccionVoto').style.display = 'block';
+}
+
+document.getElementById('formPartido')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const torneo = document.getElementById('nombre_torneo').value.trim();
+  const fecha = document.getElementById('fecha_partido').value;
+  const partido = document.getElementById('nombre_partido').value.trim();
+
+  const blancos = obtenerJugadores('Blanco');
+  const negros = obtenerJugadores('Negro');
+
+  if (blancos.length < 5 || negros.length < 5) {
+    return alert('Debes seleccionar 5 jugadores por equipo');
+  }
+
+  const datos = [...blancos, ...negros].map(j => ({ ...j, torneo, fecha, partido }));
+  try {
+    await fetch(WEBHOOK_PARTIDO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    });
+    prepararVotacion(datos);
+    const numeros = datos.map(d => d.tel).filter(Boolean);
+    if (numeros.length) {
+      await fetch('/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numeros, partido })
+      });
+    }
+  } catch (err) {
+    console.error('Error guardando partido', err);
+    alert('No se pudo guardar el partido');
+  }
+});
+
+document.getElementById('formFigura')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const jugador = document.getElementById('selectFigura').value;
+  const partido = document.getElementById('nombre_partido').value.trim();
+  const fecha = document.getElementById('fecha_partido').value;
+  try {
+    await fetch(WEBHOOK_VOTO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jugador, partido, fecha })
+    });
+    alert('Voto registrado');
+    document.getElementById('seccionVoto').style.display = 'none';
+    document.getElementById('formPartido').reset();
+    document.querySelector('.equipos-grid').style.display = 'none';
+  } catch (err) {
+    console.error('Error enviando voto', err);
+    alert('No se pudo registrar el voto');
+  }
+});
 // 🖼 Mostrar últimos partidos
 function renderUltimosPartidos() {
   const agrupados = {};
@@ -234,5 +314,16 @@ function capitalizar(str) {
 
 // 🔄 Recalcular estadísticas y actualizar gráfico al iniciar
 document.addEventListener("DOMContentLoaded", () => {
+  cargarJugadores();
   actualizarGrafico("puntos");
+
+  const nombrePartido = document.getElementById("nombre_partido");
+  if (nombrePartido) {
+    nombrePartido.addEventListener("change", () => {
+      if (nombrePartido.value.trim()) {
+        poblarFormulario();
+        document.querySelector(".equipos-grid").style.display = "grid";
+      }
+    });
+  }
 });

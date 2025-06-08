@@ -21,7 +21,7 @@
         <input type="date" id="fecha_partido" required/>
         <input type="text" id="nombre_partido" placeholder="Nombre del partido" required/>
 
-        <div class="equipos-grid">
+        <div class="equipos-grid" style="display:none;">
           <fieldset>
             <legend>⚪ Equipo Blanco</legend>
             <div id="equipoBlanco"></div>
@@ -37,6 +37,14 @@
         </div>
 
         <button type="submit">Guardar Partido</button>
+      </form>
+    </section>
+
+    <section id="seccionVoto" style="display:none;">
+      <h2>Votar Figura</h2>
+      <form id="formFigura">
+        <select id="selectFigura" required></select>
+        <button type="submit">Enviar Voto</button>
       </form>
     </section>
 
