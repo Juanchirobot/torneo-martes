@@ -327,3 +327,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+fetch('https://juanchi.app.n8n.cloud/webhook/cargar-partido', {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(nuevos)
+})
+.then(res => {
+  if (!res.ok) throw new Error("Error en la carga");
+  alert("Partido guardado correctamente");
+})
+.catch(err => {
+  console.error("Error guardando partido", err);
+  alert("Hubo un error al guardar el partido.");
+});
+app.post('/webhook', async (req, res) => {
+  const from = req.body.From;
+  const message = (req.body.Body || '').trim();
+  ...
+  await fetch(process.env.N8N_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from, message })
+  });
+  ...
+});
