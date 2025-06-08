@@ -1,10 +1,11 @@
 const SHEET_ID = "15SFBZPl54ZaYNrTeog0COivI0e9wI_eHLcZJTaNUz7Y";
 const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
-const WEBHOOK_PARTIDO_URL = "https://juanchi.app.n8n.cloud/webhook-test/cargar-partido";
-const WEBHOOK_VOTO_URL = "https://juanchi.app.n8n.cloud/webhook-test/cargar-voto";
+const WEBHOOK_PARTIDO_URL = "https://juanchi.app.n8n.cloud/webhook/cargar-partido";
+const WEBHOOK_VOTO_URL = "https://juanchi.app.n8n.cloud/webhook/cargar-voto";
 
 let jugadores = [];
 let partidos = [];
+let chartJugadores = null;
 
 // 🔄 Cargar jugadores desde Google Sheets
 async function cargarJugadores() {
@@ -12,11 +13,14 @@ async function cargarJugadores() {
   try {
     const res = await fetch(url);
     const data = await res.json();
-    jugadores = data.values.slice(1).map(([id, nombre, tel]) => ({ id: parseInt(id), nombre, tel }));
+    jugadores = data.values.slice(1).map(([id, nombre, tel]) => ({
+      id: parseInt(id), nombre, tel
+    }));
   } catch (err) {
     console.error("Error al cargar jugadores:", err);
   }
 }
+
 // 🧩 Modal para agregar jugador nuevo
 function abrirModalJugador() {
   document.getElementById("modalJugador").style.display = "flex";
@@ -88,13 +92,16 @@ function obtenerJugadores(equipo) {
   return Array.from(
     document.querySelectorAll(`#equipo${equipo} .filaJugador`)
   ).map((fila) => {
-    const jugador = fila.querySelector('select').value;
+    const select = fila.querySelector('select');
+    const jugador = select.value;
+    if (jugador === "Selecciona jugador") {
+      throw new Error("Faltan jugadores seleccionados en el equipo " + equipo);
+    }
     const goles = parseInt(fila.querySelector('input').value || '0');
     const tel = jugadores.find(j => j.nombre === jugador)?.tel || '';
     return { equipo, jugador, goles, tel };
   });
 }
-
 function prepararVotacion(jugadoresPartido) {
   const select = document.getElementById('selectFigura');
   if (!select) return;
@@ -114,21 +121,24 @@ document.getElementById('formPartido')?.addEventListener('submit', async (e) => 
   const fecha = document.getElementById('fecha_partido').value;
   const partido = document.getElementById('nombre_partido').value.trim();
 
-  const blancos = obtenerJugadores('Blanco');
-  const negros = obtenerJugadores('Negro');
-
-  if (blancos.length < 5 || negros.length < 5) {
-    return alert('Debes seleccionar 5 jugadores por equipo');
-  }
-
-  const datos = [...blancos, ...negros].map(j => ({ ...j, torneo, fecha, partido }));
   try {
+    const blancos = obtenerJugadores('Blanco');
+    const negros = obtenerJugadores('Negro');
+
+    if (blancos.length < 5 || negros.length < 5) {
+      return alert('Debes seleccionar 5 jugadores por equipo');
+    }
+
+    const datos = [...blancos, ...negros].map(j => ({ ...j, torneo, fecha, partido }));
+
     await fetch(WEBHOOK_PARTIDO_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(datos)
     });
+
     prepararVotacion(datos);
+
     const numeros = datos.map(d => d.tel).filter(Boolean);
     if (numeros.length) {
       await fetch('/notify', {
@@ -142,7 +152,6 @@ document.getElementById('formPartido')?.addEventListener('submit', async (e) => 
     alert('No se pudo guardar el partido');
   }
 });
-
 document.getElementById('formFigura')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const jugador = document.getElementById('selectFigura').value;
@@ -163,6 +172,7 @@ document.getElementById('formFigura')?.addEventListener('submit', async (e) => {
     alert('No se pudo registrar el voto');
   }
 });
+
 // 🖼 Mostrar últimos partidos
 function renderUltimosPartidos() {
   const agrupados = {};
@@ -262,8 +272,6 @@ function calcularEstadisticas(tipo) {
     label: tipo.charAt(0).toUpperCase() + tipo.slice(1)
   };
 }
-let chartJugadores;
-
 // 🔄 Actualizar gráfico dinámico según filtro
 function actualizarGrafico(tipo = "puntos") {
   const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
@@ -306,14 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
       actualizarGrafico(e.target.value);
     });
   }
-});
-// 🧩 Función auxiliar para capitalizar etiquetas de estadísticas
-function capitalizar(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
-// 🔄 Recalcular estadísticas y actualizar gráfico al iniciar
-document.addEventListener("DOMContentLoaded", () => {
   cargarJugadores();
   actualizarGrafico("puntos");
 
@@ -327,41 +328,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-fetch('https://juanchi.app.n8n.cloud/webhook/cargar-partido', {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(nuevos)
-})
-.then(res => {
-  if (!res.ok) throw new Error("Error en la carga");
-  alert("Partido guardado correctamente");
-})
-.catch(err => {
-  console.error("Error guardando partido", err);
-  alert("Hubo un error al guardar el partido.");
-});
-app.post('/webhook', async (req, res) => {
-  const from = req.body.From;
-  const message = (req.body.Body || '').trim();
-  ...
-  await fetch(process.env.N8N_WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from, message })
-  });
-  ...
-});
-function obtenerJugadores(equipo) {
-  return Array.from(
-    document.querySelectorAll(`#equipo${equipo} .filaJugador`)
-  ).map((fila) => {
-    const select = fila.querySelector('select');
-    const jugador = select.value;
-    if (jugador === "Selecciona jugador") {
-      throw new Error("Faltan jugadores seleccionados en el equipo " + equipo);
-    }
-    const goles = parseInt(fila.querySelector('input').value || '0');
-    const tel = jugadores.find(j => j.nombre === jugador)?.tel || '';
-    return { equipo, jugador, goles, tel };
-  });
-}
