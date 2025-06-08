@@ -351,3 +351,17 @@ app.post('/webhook', async (req, res) => {
   });
   ...
 });
+function obtenerJugadores(equipo) {
+  return Array.from(
+    document.querySelectorAll(`#equipo${equipo} .filaJugador`)
+  ).map((fila) => {
+    const select = fila.querySelector('select');
+    const jugador = select.value;
+    if (jugador === "Selecciona jugador") {
+      throw new Error("Faltan jugadores seleccionados en el equipo " + equipo);
+    }
+    const goles = parseInt(fila.querySelector('input').value || '0');
+    const tel = jugadores.find(j => j.nombre === jugador)?.tel || '';
+    return { equipo, jugador, goles, tel };
+  });
+}
