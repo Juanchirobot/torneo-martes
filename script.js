@@ -43,8 +43,6 @@ document.getElementById("formJugador").addEventListener("submit", e => {
   cerrarModalJugador();
 });
 function poblarFormulario() {
-  const selectsOcupados = [];
-
   ["Blanco", "Negro"].forEach(equipo => {
     const contenedor = document.getElementById("equipo" + equipo);
     contenedor.innerHTML = "";
@@ -62,17 +60,10 @@ function poblarFormulario() {
       select.appendChild(defaultOption);
 
       jugadores.forEach(j => {
-        if (!selectsOcupados.includes(j.nombre)) {
-          const opt = document.createElement("option");
-          opt.value = j.nombre;
-          opt.textContent = j.nombre;
-          select.appendChild(opt);
-        }
-      });
-
-      select.addEventListener("change", () => {
-        selectsOcupados.push(select.value);
-        poblarFormulario(); // repinta para eliminar el jugador seleccionado en el otro equipo
+        const opt = document.createElement("option");
+        opt.value = j.nombre;
+        opt.textContent = j.nombre;
+        select.appendChild(opt);
       });
 
       const input = document.createElement("input");
