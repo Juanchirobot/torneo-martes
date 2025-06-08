@@ -131,13 +131,6 @@ document.getElementById('formPartido')?.addEventListener('submit', async (e) => 
     prepararVotacion(datos);
 
     const numeros = datos.map(d => d.tel).filter(Boolean);
-    if (numeros.length) {
-      await fetch('/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numeros, partido })
-      });
-    }
   } catch (err) {
     console.error('Error guardando partido', err);
     alert('No se pudo guardar el partido');
