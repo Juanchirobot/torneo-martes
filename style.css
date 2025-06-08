@@ -235,3 +235,8 @@ footer {
   max-width: 80px;
   text-align: center;
 }
+select option {
+  background-color: #ffffff;
+  color: #000000;
+}
+
