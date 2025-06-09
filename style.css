@@ -1,58 +1,41 @@
 body {
   font-family: "Segoe UI", sans-serif;
-  background: #f4f7fa;
+  background: url('background.png') center center / cover no-repeat fixed;
   margin: 0;
   padding: 0;
-  color: #333;
-}
-
-header {
-  background-color: #0077bd;
-  color: white;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-header img {
-  height: 60px;
-}
-
-h1 {
-  font-size: 24px;
-  margin: 0;
+  color: #f0f0f0;
 }
 
 main {
   padding: 20px;
+  backdrop-filter: blur(6px);
+  background-color: rgba(0, 0, 0, 0.4);
+  min-height: 100vh;
 }
 
 .tabs {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  justify-content: center;
 }
 
 .tabs button {
   padding: 10px 15px;
   border: none;
-  background-color: #ddd;
+  background-color: rgba(255,255,255,0.1);
+  color: white;
   cursor: pointer;
   border-radius: 5px;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .tabs button:hover {
-  background-color: #bbb;
+  background-color: rgba(255,255,255,0.2);
+  transform: scale(1.03);
 }
 
 .tab {
-  display: none;
-}
-
-#tabCargar,
-#tabEstadisticas {
   display: none;
 }
 
@@ -65,12 +48,47 @@ form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: white;
 }
 
-.grupo-campos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 10px;
+label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #888;
+  border-radius: 4px;
+  background-color: rgba(255,255,255,0.1);
+  color: white;
+}
+
+select option {
+  background-color: #222;
+  color: #fff;
+}
+
+button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1769aa;
 }
 .equipos-grid {
   display: grid;
@@ -92,8 +110,10 @@ select {
   padding: 5px;
   font-size: 14px;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid #777;
   flex: 1;
+  background-color: rgba(255,255,255,0.08);
+  color: #fff;
 }
 
 input[type="checkbox"] {
@@ -108,22 +128,6 @@ input[type="checkbox"] {
   margin-top: 15px;
 }
 
-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button.primario {
-  background-color: #0077bd;
-  color: white;
-}
-
-button.primario:hover {
-  background-color: #005a8d;
-}
-
 .modal {
   display: none;
   position: fixed;
@@ -136,19 +140,22 @@ button.primario:hover {
   align-items: center;
   z-index: 10;
 }
+
 .modal-content {
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.85);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 90%;
   max-width: 500px;
   position: relative;
+  color: white;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content h2 {
   margin-top: 0;
-  font-size: 20px;
-  color: #0077bd;
+  font-size: 22px;
+  color: #ffffff;
 }
 
 .close {
@@ -157,6 +164,7 @@ button.primario:hover {
   right: 15px;
   font-size: 24px;
   cursor: pointer;
+  color: #fff;
 }
 
 .overlay {
@@ -175,50 +183,16 @@ button.primario:hover {
   flex-wrap: wrap;
   gap: 15px;
   margin-top: 20px;
+  justify-content: center;
 }
 
 .cardPartido {
-  background-color: white;
+  background-color: rgba(255,255,255,0.05);
   padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  width: 250px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-label {
-  font-weight: bold;
-  margin-top: 10px;
-  display: block;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="number"],
-select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-select option {
-  background-color: #fff;
-  color: #000;
-}
-
-button {
-  background-color: #0077bd;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  width: 240px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 5px 0;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #005fa3;
+  text-align: center;
 }
