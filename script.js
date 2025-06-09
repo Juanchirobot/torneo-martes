@@ -234,56 +234,6 @@ function calcularEstadisticas(tipo) {
   };
 }
 
-let chartJugadores;
-
-function actualizarGrafico(tipo = "puntos") {
-  const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
-  if (!ctx) return;
-
-  const { labels, data, label } = calcularEstadisticas(tipo);
-  if (chartJugadores) chartJugadores.destroy();
-
-  chartJugadores = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label,
-          data,
-          backgroundColor: "#26c6da"
-        }
-      ]
-    },
-    options: {
-      indexAxis: "y",
-      plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true } }
-    }
-  });
-}
-// 🎯 Eventos de carga
-document.addEventListener("DOMContentLoaded", () => {
-  cargarJugadores();
-  cargarPartidos(); // ahora que cargamos la sheet de Partidos
-  actualizarGrafico("puntos");
-
-  document
-    .getElementById("tipoGrafico")
-    ?.addEventListener("change", (e) => {
-      actualizarGrafico(e.target.value);
-    });
-
-  document
-    .getElementById("nombre_partido")
-    ?.addEventListener("change", () => {
-      if (document.getElementById("nombre_partido").value.trim()) {
-        poblarFormulario();
-        document.querySelector(".equipos-grid").style.display = "grid";
-      }
-    });
-});
-
 // 🎛 Cambiar entre pestañas
 function mostrarTab(tabId) {
   document.querySelectorAll(".tab").forEach(tab => {
