@@ -26,6 +26,7 @@ Este proyecto es una web para registrar partidos, jugadores y estadísticas. A c
 1. Crea una hoja con las pestañas **Jugadores** y **Partidos**.
 2. Obtén el identificador de la hoja (`SHEET_ID`) y una clave de API válida (`API_KEY`).
 3. En `script.js` reemplaza los valores de `SHEET_ID` y `API_KEY` por los de tu proyecto.
+4. Ajusta la constante `WEBHOOK_PARTIDO_URL` con la URL de tu webhook de n8n para registrar los partidos.
 
 ## Paso a paso en n8n
 1. **Webhook**: crea un nuevo nodo *Webhook* con método `POST`. Obtén la URL y utilízala como `N8N_WEBHOOK_URL` en el servidor.

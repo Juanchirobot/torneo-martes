@@ -134,8 +134,8 @@ function renderUltimosPartidos() {
   });
 
   document.getElementById("ultimosPartidos").innerHTML = cards.join("");
+
 }
-let chartJugadores;
 
 function actualizarGrafico(tipo = "puntos") {
   const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
@@ -277,6 +277,13 @@ function poblarFormulario() {
         select.appendChild(opt);
       });
 
+      select.addEventListener("change", () => {
+        prepararVotacion([
+          ...obtenerJugadores("Blanco"),
+          ...obtenerJugadores("Negro"),
+        ]);
+      });
+
       const inputGoles = document.createElement("input");
       inputGoles.type = "number";
       inputGoles.placeholder = "Goles";
@@ -305,6 +312,7 @@ function poblarFormulario() {
       contenedor.appendChild(fila);
     }
   });
+  prepararVotacion([]);
 }
 // 🧩 Obtener datos de jugadores del formulario
 function obtenerJugadores(equipo) {
@@ -400,66 +408,4 @@ function prepararVotacion(jugadoresPartido) {
   });
 
   select.style.display = "block";
-}
-
-// 🧩 Eventos de carga inicial
-document.addEventListener("DOMContentLoaded", () => {
-  cargarDatos().then(() => {
-    actualizarGrafico("puntos");
-    renderUltimosPartidos();
-  });
-
-  document.getElementById("tipoGrafico")?.addEventListener("change", (e) => {
-    actualizarGrafico(e.target.value);
-  });
-
-  document.getElementById("nombre_partido")?.addEventListener("change", () => {
-    if (document.getElementById("nombre_partido").value.trim()) {
-      poblarFormulario();
-      document.querySelector(".equipos-grid").style.display = "grid";
-    }
-  });
-});
-
-// 🎛 Cambiar entre pestañas
-function mostrarTab(tabId) {
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.style.display = "none";
-  });
-  document.getElementById(tabId).style.display = "block";
-}
-
-// 🪟 Abrir y cerrar modal de formulario
-function abrirModalFormulario() {
-  const modal = document.getElementById("modalFormulario");
-  const overlay = document.getElementById("overlay");
-  overlay.style.display = "block";
-  modal.style.display = "flex";
-  requestAnimationFrame(() => modal.classList.add("show"));
-}
-
-function cerrarModalFormulario() {
-  const modal = document.getElementById("modalFormulario");
-  modal.classList.remove("show");
-  const overlay = document.getElementById("overlay");
-  overlay.style.display = "none";
-  setTimeout(() => (modal.style.display = "none"), 300);
-  document.getElementById("formPartido").reset();
-  document.querySelector(".equipos-grid").style.display = "none";
-}
-// 🪟 Abrir y cerrar modal de jugador nuevo
-function abrirModalJugador() {
-  const modal = document.getElementById("modalJugador");
-  const overlay = document.getElementById("overlay");
-  overlay.style.display = "block";
-  modal.style.display = "flex";
-  requestAnimationFrame(() => modal.classList.add("show"));
-}
-
-function cerrarModalJugador() {
-  const modal = document.getElementById("modalJugador");
-  modal.classList.remove("show");
-  const overlay = document.getElementById("overlay");
-  overlay.style.display = "none";
-  setTimeout(() => (modal.style.display = "none"), 300);
 }
