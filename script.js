@@ -19,16 +19,7 @@ async function cargarJugadores() {
   }
 }
 
-// 🧩 Modal de jugador
-function abrirModalJugador() {
-  document.getElementById("modalJugador").style.display = "flex";
-  document.getElementById("overlay").style.display = "block";
-}
-function cerrarModalJugador() {
-  document.getElementById("modalJugador").style.display = "none";
-  document.getElementById("overlay").style.display = "none";
-  document.getElementById("nuevoJugador").value = "";
-}
+
 
 // ➕ Agregar jugador al array
 document.getElementById("formJugador").addEventListener("submit", e => {
@@ -318,22 +309,36 @@ function mostrarTab(tabId) {
 
 // 🪟 Abrir y cerrar modal de formulario
 function abrirModalFormulario() {
-  document.getElementById("modalFormulario").style.display = "block";
+  const modal = document.getElementById("modalFormulario");
+  const overlay = document.getElementById("overlay");
+  overlay.style.display = "block";
+  modal.style.display = "flex";
+  requestAnimationFrame(() => modal.classList.add("show"));
 }
 
 function cerrarModalFormulario() {
-  document.getElementById("modalFormulario").style.display = "none";
+  const modal = document.getElementById("modalFormulario");
+  modal.classList.remove("show");
+  const overlay = document.getElementById("overlay");
+  overlay.style.display = "none";
+  setTimeout(() => (modal.style.display = "none"), 300);
   document.getElementById("formPartido").reset();
   document.querySelector(".equipos-grid").style.display = "none";
 }
 
 // 🪟 Abrir y cerrar modal de jugador nuevo
 function abrirModalJugador() {
-  document.getElementById("modalJugador").style.display = "block";
-  document.getElementById("overlay").style.display = "block";
+  const modal = document.getElementById("modalJugador");
+  const overlay = document.getElementById("overlay");
+  overlay.style.display = "block";
+  modal.style.display = "flex";
+  requestAnimationFrame(() => modal.classList.add("show"));
 }
 
 function cerrarModalJugador() {
-  document.getElementById("modalJugador").style.display = "none";
-  document.getElementById("overlay").style.display = "none";
+  const modal = document.getElementById("modalJugador");
+  modal.classList.remove("show");
+  const overlay = document.getElementById("overlay");
+  overlay.style.display = "none";
+  setTimeout(() => (modal.style.display = "none"), 300);
 }
