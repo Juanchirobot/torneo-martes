@@ -8,11 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <img src="banner.png" alt="Banner Torneo" />
-    <h1>Torneo de Fútbol Martes</h1>
-  </header>
-
   <main>
     <div class="tabs">
       <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
@@ -24,7 +19,7 @@
       <div id="ultimosPartidos" class="cards-container"></div>
     </div>
 
-<div id="tabEstadisticas" class="tab" style="display:none;">  
+    <div id="tabEstadisticas" class="tab" style="display:none;">  
       <section>
         <label for="tipoGrafico">Ver ranking por:</label>
         <select id="tipoGrafico">
@@ -77,6 +72,7 @@
         </form>
       </div>
     </div>
+
     <div id="modalJugador" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalJugador()">&times;</span>
@@ -96,5 +92,6 @@
     </section>
 
     <script src="script.js"></script>
-  </body>
+  </main>
+</body>
 </html>
