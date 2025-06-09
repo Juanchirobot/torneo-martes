@@ -8,23 +8,22 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <main>
-    <div class="header-container">
-      <h1>🏀 Torneo Martes</h1>
+  <main class="contenedor">
+    <section class="encabezado">
+      <h1>⚽ Torneo Martes</h1>
       <p>Organiza, carga y analiza tus partidos como un profesional</p>
-      <div class="tabs">
-        <button class="btn primario" onclick="abrirModalFormulario()">+ Nuevo Partido</button>
-        <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
+      <div class="botones-acciones">
+        <button class="btn primario" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
       </div>
-    </div>
+    </section>
 
-    <div id="tabCargar" class="tab active">
-      <div id="ultimosPartidos" class="cards-container"></div>
-    </div>
-
-    <section class="bloque-estadisticas">
-      <h2>Ranking de Jugadores</h2>
-      <label for="tipoGrafico">Ver por:</label>
+    <section id="ultimosPartidos" class="cards-container">
+      <h2>Últimos partidos</h2>
+      <div id="cardsPartidos" class="grid-cards"></div>
+    </section>
+    <section id="seccionEstadisticas" class="estadisticas">
+      <h2>Estadísticas</h2>
+      <label for="tipoGrafico">Ver ranking por:</label>
       <select id="tipoGrafico">
         <option value="puntos">Puntos</option>
         <option value="goles">Goles</option>
@@ -33,6 +32,7 @@
       <canvas id="graficoJugadores"></canvas>
     </section>
 
+    <!-- Modal de Carga de Partido -->
     <div id="modalFormulario" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalFormulario()">&times;</span>
@@ -40,10 +40,9 @@
         <form id="formPartido">
           <label for="nombre_torneo">Nombre del Torneo:</label>
           <input type="text" id="nombre_torneo" required />
-
+          
           <label for="fecha_inicio_torneo">Fecha de Inicio:</label>
           <input type="date" id="fecha_inicio_torneo" required />
-
           <label for="fecha_partido">Fecha del Partido:</label>
           <input type="date" id="fecha_partido" required />
 
@@ -52,11 +51,11 @@
 
           <div class="equipos-grid" style="display: none;">
             <div>
-              <h3>⚪ Blanco</h3>
+              <h3>⚪ Equipo Blanco</h3>
               <div id="equipoBlanco"></div>
             </div>
             <div>
-              <h3>⚫ Negro</h3>
+              <h3>⚫ Equipo Negro</h3>
               <div id="equipoNegro"></div>
             </div>
           </div>
@@ -86,7 +85,28 @@
     </div>
 
     <div id="overlay" class="overlay" onclick="cerrarModalJugador(); cerrarModalFormulario()"></div>
-    <script src="script.js"></script>
+
+    <section id="seccionPartidos">
+      <h2>Últimos partidos</h2>
+      <div id="cardsPartidos" class="cards-container"></div>
+    </section>
+
+    <section id="seccionEstadisticas">
+      <h2>Estadísticas</h2>
+      <label for="tipoGrafico">Ver ranking por:</label>
+      <select id="tipoGrafico">
+        <option value="puntos">Puntos</option>
+        <option value="goles">Goles</option>
+        <option value="partidos">Participaciones</option>
+      </select>
+      <canvas id="graficoJugadores"></canvas>
+    </section>
   </main>
+
+  <footer>
+    <p>© 2025 Torneo de Fútbol Martes - Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
