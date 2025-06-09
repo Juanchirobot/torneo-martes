@@ -19,6 +19,25 @@ async function cargarJugadores() {
   }
 }
 
+// 🔄 Cargar partidos desde Google Sheets
+async function cargarPartidos() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.values) return;
+    partidos = data.values.slice(1).map((row) => ({
+      fecha_partido: row[0],
+      nombre_partido: row[1],
+      equipo: row[2],
+      jugador: row[3],
+      goles: parseInt(row[4] || "0"),
+    }));
+  } catch (err) {
+    console.error("Error al cargar partidos:", err);
+  }
+}
+
 
 
 // ➕ Agregar jugador al array
@@ -280,8 +299,9 @@ function actualizarGrafico(tipo = "puntos") {
 }
 
 // 🎯 Eventos de carga
-document.addEventListener("DOMContentLoaded", () => {
-  cargarJugadores();
+document.addEventListener("DOMContentLoaded", async () => {
+  await Promise.all([cargarJugadores(), cargarPartidos()]);
+  renderUltimosPartidos();
   actualizarGrafico("puntos");
 
   document
