@@ -13,26 +13,35 @@ main {
   min-height: 100vh;
 }
 
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
 .tabs {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   margin-bottom: 20px;
   justify-content: center;
 }
 
+
 .tabs button {
-  padding: 10px 15px;
-  border: none;
-  background-color: rgba(255,255,255,0.1);
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background-color: rgba(255,255,255,0.08);
   color: white;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s, transform 0.2s;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  min-width: 130px;
 }
 
 .tabs button:hover {
-  background-color: rgba(255,255,255,0.2);
-  transform: scale(1.03);
+  background-color: rgba(255,255,255,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
 }
 
 .tab {
@@ -139,6 +148,17 @@ input[type="checkbox"] {
   justify-content: center;
   align-items: center;
   z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
 }
 
 .modal-content {
@@ -150,6 +170,8 @@ input[type="checkbox"] {
   position: relative;
   color: white;
   backdrop-filter: blur(4px);
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
 }
 
 .modal-content h2 {
@@ -175,14 +197,15 @@ input[type="checkbox"] {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
   z-index: 5;
 }
 
 .cards-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 10px;
+  margin-top: 15px;
   justify-content: center;
 }
 
@@ -195,4 +218,34 @@ input[type="checkbox"] {
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   color: white;
   text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.cardPartido:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 10px;
+  }
+
+  .equipos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cardPartido {
+    width: 100%;
+  }
 }

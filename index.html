@@ -9,6 +9,7 @@
 </head>
 <body>
   <main>
+    <div class="container">
     <div class="tabs">
       <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
       <button onclick="mostrarTab('tabEstadisticas')">📈 Estadísticas</button>
@@ -84,13 +85,9 @@
       </div>
     </div>
 
-    <div id="overlay" class="overlay" onclick="cerrarModalJugador()"></div>
+    <div id="overlay" class="overlay" onclick="cerrarModalJugador(); cerrarModalFormulario()"></div>
 
-    <section>
-      <h2>Últimos partidos</h2>
-      <div id="cardsPartidos" class="cards-container"></div>
-    </section>
-
+    </div> <!-- container -->
     <script src="script.js"></script>
   </main>
 </body>
