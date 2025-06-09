@@ -18,20 +18,18 @@ async function cargarJugadores() {
     console.error("Error al cargar jugadores:", err);
   }
 }
-
-
-
-// ➕ Agregar jugador al array
+// ➕ Agregar jugador al array y refrescar formulario
 document.getElementById("formJugador").addEventListener("submit", e => {
   e.preventDefault();
   const nombre = document.getElementById("nuevoJugador").value.trim();
   if (!nombre) return alert("El nombre no puede estar vacío");
-  const nuevoID = jugadores.length > 0 ? jugadores[jugadores.length - 1].id + 1 : 1;
+  const nuevoID = jugadores.length > 0 ? Math.max(...jugadores.map(j => j.id)) + 1 : 1;
   jugadores.push({ id: nuevoID, nombre, tel: '', nuevo: true });
   poblarFormulario();
   cerrarModalJugador();
 });
-// 🧩 Al escribir nombre del partido, se habilita formulario
+
+// 🧩 Al escribir nombre del partido, se activa el formulario
 document.getElementById("nombre_partido").addEventListener("input", () => {
   const valor = document.getElementById("nombre_partido").value.trim();
   if (valor) {
@@ -278,7 +276,6 @@ function actualizarGrafico(tipo = "puntos") {
     },
   });
 }
-
 // 🎯 Eventos de carga
 document.addEventListener("DOMContentLoaded", () => {
   cargarJugadores();
@@ -299,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 });
+
 // 🎛 Cambiar entre pestañas
 function mostrarTab(tabId) {
   document.querySelectorAll(".tab").forEach(tab => {
