@@ -8,18 +8,24 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <main>
-    <div class="tabs">
+  <main class="container-torneo">
+
+    <section class="bloque-header">
+      <h1>⚽ Torneo Martes</h1>
+      <p class="subtitulo">Organiza, carga y analiza tus partidos como un profesional</p>
+    </section>
+
+    <div class="tabs tarjetas-opciones">
       <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
       <button onclick="mostrarTab('tabEstadisticas')">📈 Estadísticas</button>
     </div>
 
-    <div id="tabCargar" class="tab">
+    <div id="tabCargar" class="tab bloque">
       <button class="btn primario" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
       <div id="ultimosPartidos" class="cards-container"></div>
     </div>
 
-    <div id="tabEstadisticas" class="tab" style="display:none;">  
+    <div id="tabEstadisticas" class="tab bloque" style="display:none;">  
       <section>
         <label for="tipoGrafico">Ver ranking por:</label>
         <select id="tipoGrafico">
@@ -86,7 +92,7 @@
 
     <div id="overlay" class="overlay" onclick="cerrarModalJugador(); cerrarModalFormulario()"></div>
 
-    <section>
+    <section class="bloque">
       <h2>Últimos partidos</h2>
       <div id="cardsPartidos" class="cards-container"></div>
     </section>
