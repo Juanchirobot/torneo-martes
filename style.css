@@ -223,3 +223,46 @@ input[type="checkbox"] {
 .cardPartido:hover {
   transform: translateY(-5px);
 }
+footer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 20px 10px;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+section.estadisticas-globales {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+section.estadisticas-globales h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 10px;
+  }
+
+  .equipos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cardPartido {
+    width: 100%;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+}
