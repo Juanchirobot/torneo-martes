@@ -3,41 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Torneo de Fútbol</title>
+  <title>Torneo Martes</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <main class="container-torneo">
-
-    <section class="bloque-header">
-      <h1>⚽ Torneo Martes</h1>
-      <p class="subtitulo">Organiza, carga y analiza tus partidos como un profesional</p>
-    </section>
-
-    <div class="tabs tarjetas-opciones">
-      <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
-      <button onclick="mostrarTab('tabEstadisticas')">📈 Estadísticas</button>
+  <main>
+    <div class="header-container">
+      <h1>🏀 Torneo Martes</h1>
+      <p>Organiza, carga y analiza tus partidos como un profesional</p>
+      <div class="tabs">
+        <button class="btn primario" onclick="abrirModalFormulario()">+ Nuevo Partido</button>
+        <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
+      </div>
     </div>
 
-    <div id="tabCargar" class="tab bloque">
-      <button class="btn primario" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
+    <div id="tabCargar" class="tab active">
       <div id="ultimosPartidos" class="cards-container"></div>
     </div>
 
-    <div id="tabEstadisticas" class="tab bloque" style="display:none;">  
-      <section>
-        <label for="tipoGrafico">Ver ranking por:</label>
-        <select id="tipoGrafico">
-          <option value="puntos">Puntos</option>
-          <option value="goles">Goles</option>
-          <option value="partidos">Participaciones</option>
-        </select>
-      </section>
-      <section>
-        <canvas id="graficoJugadores"></canvas>
-      </section>
-    </div>
+    <section class="bloque-estadisticas">
+      <h2>Ranking de Jugadores</h2>
+      <label for="tipoGrafico">Ver por:</label>
+      <select id="tipoGrafico">
+        <option value="puntos">Puntos</option>
+        <option value="goles">Goles</option>
+        <option value="partidos">Participaciones</option>
+      </select>
+      <canvas id="graficoJugadores"></canvas>
+    </section>
 
     <div id="modalFormulario" class="modal">
       <div class="modal-content">
@@ -47,7 +41,7 @@
           <label for="nombre_torneo">Nombre del Torneo:</label>
           <input type="text" id="nombre_torneo" required />
 
-          <label for="fecha_inicio_torneo">Fecha de Inicio del Torneo:</label>
+          <label for="fecha_inicio_torneo">Fecha de Inicio:</label>
           <input type="date" id="fecha_inicio_torneo" required />
 
           <label for="fecha_partido">Fecha del Partido:</label>
@@ -55,6 +49,7 @@
 
           <label for="nombre_partido">Nombre del Partido:</label>
           <input type="text" id="nombre_partido" required />
+
           <div class="equipos-grid" style="display: none;">
             <div>
               <h3>⚪ Blanco</h3>
@@ -91,12 +86,6 @@
     </div>
 
     <div id="overlay" class="overlay" onclick="cerrarModalJugador(); cerrarModalFormulario()"></div>
-
-    <section class="bloque">
-      <h2>Últimos partidos</h2>
-      <div id="cardsPartidos" class="cards-container"></div>
-    </section>
-
     <script src="script.js"></script>
   </main>
 </body>
