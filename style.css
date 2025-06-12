@@ -1,3 +1,4 @@
+/* Reset base */
 * {
   margin: 0;
   padding: 0;
@@ -42,6 +43,8 @@ header h1 {
   margin-top: 1rem;
   color: #ffffff;
 }
+
+/* Tabs y botones */
 .tabs {
   display: flex;
   justify-content: center;
@@ -62,16 +65,16 @@ header h1 {
 .tabs button:hover {
   background-color: rgba(255, 255, 255, 0.25);
 }
-
 .tab {
   margin-bottom: 2rem;
 }
 
+/* Equipos y formulario */
 .equipos-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .equipos-grid h3 {
@@ -88,12 +91,25 @@ header h1 {
 }
 
 .filaJugador select,
-.filaJugador input {
+.filaJugador input,
+select,
+input[type="number"],
+input[type="date"],
+input[type="text"] {
   flex: 1;
-  padding: 0.3rem;
+  padding: 0.4rem;
   border-radius: 6px;
-  border: none;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid #444;
+  color: white;
 }
+
+.inputGoles,
+.inputMinTarde {
+  width: 60px;
+  text-align: center;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -106,119 +122,42 @@ form label {
   font-weight: 500;
 }
 
-form input,
-form select {
-  padding: 0.4rem 0.6rem;
-  border-radius: 5px;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-}
-
-form input::placeholder {
+form input::placeholder,
+input::placeholder {
   color: #ccc;
 }
 
+option {
+  background-color: #111;
+  color: white;
+}
+
+/* Acciones del formulario */
 .acciones-form {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
-.acciones-form button {
-  background-color: #00acc1;
-  border: none;
+button,
+.acciones-form button,
+.filtro-fechas-inline button {
+  background-color: #26c6da;
   color: #fff;
-  padding: 0.5rem 1rem;
+  border: none;
+  padding: 0.6rem 1.2rem;
   border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.acciones-form button:hover {
-  background-color: #00838f;
+button:hover,
+.acciones-form button:hover,
+.filtro-fechas-inline button:hover {
+  background-color: #1ba9bd;
 }
-
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  padding: 1rem 0;
-}
-
-.cardPartido {
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
-  padding: 0.75rem 1.25rem;
-  color: #fff;
-  min-width: 200px;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.modal.show {
-  display: flex;
-}
-
-.modal-content {
-  background-color: rgba(20, 20, 20, 0.95);
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-  color: #fff;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.close {
-  color: #bbb;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.close:hover {
-  color: #fff;
-}
-
-.overlay {
-  display: none;
-  position: fixed;
-  z-index: 99;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(3px);
-}
+/* Gráfico */
 #tipoGrafico {
   padding: 0.5rem;
   background-color: #1e1e1e;
@@ -235,75 +174,7 @@ canvas {
   margin: 0 auto;
 }
 
-.equipos-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.filaJugador {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.filaJugador select,
-.filaJugador input {
-  flex: 1;
-  padding: 0.4rem;
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid #444;
-  color: white;
-  border-radius: 6px;
-}
-
-.inputGoles,
-.inputMinTarde {
-  width: 60px;
-  text-align: center;
-}
-.acciones-form {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
-}
-
-button {
-  background-color: #26c6da;
-  color: #fff;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button:hover {
-  background-color: #1ba9bd;
-}
-
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
-.cardPartido {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid #444;
-  padding: 1rem;
-  border-radius: 8px;
-  min-width: 200px;
-  text-align: center;
-  color: white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
+/* Responsive */
 @media (max-width: 600px) {
   .equipos-grid {
     grid-template-columns: 1fr;
@@ -317,186 +188,41 @@ button:hover {
   header h1 {
     font-size: 1.5rem;
   }
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 10;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(6px);
+
+  .filtro-fechas-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }
 
-.modal-content {
-  background: rgba(30, 30, 30, 0.9);
-  padding: 2rem;
-  border-radius: 12px;
-  color: white;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.4);
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
-}
-
-.modal.show .modal-content {
-  transform: scale(1);
-}
-
-.close {
-  color: white;
-  font-size: 1.5rem;
-  float: right;
-  cursor: pointer;
-}
-
-.overlay {
-  position: fixed;
-  display: none;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 5;
-}
-
-select, input[type="number"], input[type="date"], input[type="text"] {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid #555;
-  color: white;
-  border-radius: 4px;
-  padding: 0.4rem;
-}
-
-input::placeholder {
-  color: #ccc;
-}
-
-option {
-  background-color: #111;
-  color: white;
-}
-.filtro-fechas {
+/* Resultados filtrados */
+#partidosFiltrados {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.scroll-horizontal {
-  display: flex;
+  flex-wrap: nowrap;
   overflow-x: auto;
   gap: 10px;
-  padding: 10px;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  justify-content: center;
 }
 
 .cardPartidoCompacto {
   min-width: 220px;
   padding: 12px;
-  background: #ffffffcc;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   flex-shrink: 0;
   transition: transform 0.2s ease;
+  color: #fff;
 }
 
 .cardPartidoCompacto:hover {
   transform: scale(1.05);
 }
-
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.6);
-}
-
-.modal-content {
-  background-color: #fff;
-  margin: 60px auto;
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  position: relative;
-}
-
-.modal-content table {
-  width: 100%;
-  margin-top: 10px;
-  border-collapse: collapse;
-}
-
-.modal-content th, .modal-content td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
-.close {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Fondo general oscuro y difuminado */
-.overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Fondo oscuro translúcido */
-  backdrop-filter: blur(4px); /* Difuminado del fondo */
-  z-index: 9998;
-  display: none;
-}
-
-/* Estructura base del modal */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal.show {
-  display: flex;
-}
-
-.modal-content {
-  background: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
-  backdrop-filter: blur(12px); /* Difuminado glassmorphism */
-  border-radius: 12px;
-  padding: 20px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  position: relative;
-}
-
-/* Botón cerrar */
-.modal-content .close {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  font-size: 20px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: #333;
-}
-
