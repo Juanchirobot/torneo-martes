@@ -182,6 +182,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   await cargarDatos();
   actualizarGrafico("puntos");
   renderUltimosPartidos();
+  inicializarFiltrosFecha();
+
+
 
   document.getElementById("tipoGrafico")?.addEventListener("change", (e) => {
     actualizarGrafico(e.target.value);
@@ -370,7 +373,12 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
       ...j, torneo, fecha_inicio_torneo, fecha_partido, nombre_partido
     })),
     formacion,
-    nuevoJugador
+    nuevoJugador,
+    mensajeWhatsApp: todos.map(j => ({
+      nombre: j.jugador_nombre,
+      telefono: j.tel,
+      mensaje: `📢 ¡Hola ${j.jugador_nombre}! Se cargó el partido "${nombre_partido}" del torneo ${torneo} (${fecha_partido}).\nPodés ver tus estadísticas y votar a la figura. Recordá que si no votás en 24 horas, se te resta 1 punto.`
+    }))
   };
 
   try {
@@ -388,6 +396,7 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
     alert("No se pudo enviar el partido.");
   }
 });
+
 // 🎯 Preparar opciones de votación figura
 function prepararVotacion(jugadoresPartido) {
   const select = document.getElementById("selectFigura");
@@ -408,4 +417,93 @@ function prepararVotacion(jugadoresPartido) {
   });
 
   select.style.display = "block";
+}
+function filtrarPartidosPorMes() {
+  const anio = document.getElementById("selectAnio").value;
+  const mes = document.getElementById("selectMes").value;
+  const contenedor = document.getElementById("partidosFiltrados");
+  contenedor.innerHTML = "";
+
+  const partidosAgrupados = {};
+
+  partidos.forEach(p => {
+    const fecha = new Date(p.fecha_partido);
+    const fechaMes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anioStr = fecha.getFullYear();
+
+    if (fechaMes === mes && String(anioStr) === anio) {
+      const clave = `${p.fecha_partido}__${p.nombre_partido}`;
+      if (!partidosAgrupados[clave]) partidosAgrupados[clave] = [];
+      partidosAgrupados[clave].push(p);
+    }
+  });
+
+  Object.entries(partidosAgrupados).forEach(([clave, jugadores]) => {
+    const [fecha, nombre_partido] = clave.split("__");
+    const torneo = jugadores[0].torneo;
+    const golesBlanco = jugadores.filter(j => j.equipo === "Blanco").reduce((acc, j) => acc + j.goles, 0);
+    const golesNegro = jugadores.filter(j => j.equipo === "Negro").reduce((acc, j) => acc + j.goles, 0);
+
+    const div = document.createElement("div");
+    div.className = "cardPartidoCompacto";
+    div.innerHTML = `
+      <strong>${torneo}</strong><br/>
+      ${nombre_partido} (${fecha})<br/>
+      ⚪ ${golesBlanco} - ${golesNegro} ⚫
+    `;
+    div.onclick = () => mostrarDetallePartido(jugadores);
+    contenedor.appendChild(div);
+  });
+}
+function mostrarDetallePartido(jugadores) {
+  if (!jugadores || jugadores.length === 0) return;
+
+  const { torneo, fecha_partido, nombre_partido } = jugadores[0];
+
+  const blanco = jugadores.filter(j => j.equipo === "Blanco");
+  const negro = jugadores.filter(j => j.equipo === "Negro");
+
+  const golesBlanco = blanco.reduce((acc, j) => acc + j.goles, 0);
+  const golesNegro = negro.reduce((acc, j) => acc + j.goles, 0);
+
+  const puntajes = calcularPuntos(); // Reutilizamos lógica actual
+  const goleador = jugadores.reduce((max, j) => j.goles > (max?.goles || 0) ? j : max, null);
+
+  const figuraData = formaciones.find(f => f.fecha_partido === fecha_partido && f.nombre_partido === nombre_partido)
+    || votaciones.find(v => v.fecha_partido === fecha_partido && v.nombre_partido === nombre_partido);
+  const figura = jugadores.find(j => j.id_jugador === figuraData?.id_jugador_votado)?.jugador || "-";
+
+  const tablaEquipo = (lista, equipo) => `
+    <h3>${equipo === "Blanco" ? "⚪ Blanco" : "⚫ Negro"}</h3>
+    <table>
+      <thead><tr><th>Jugador</th><th>Goles</th><th>Puntos</th></tr></thead>
+      <tbody>
+        ${lista.map(j => {
+          const puntosJugador = puntajes[j.jugador]?.puntos || 0;
+          return `<tr>
+            <td>${j.jugador}</td>
+            <td>${j.goles}</td>
+            <td style="color:${puntosJugador < 0 ? 'red' : 'inherit'}">${puntosJugador}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+
+  const modal = document.getElementById("modalDetallePartido");
+  const contenido = document.getElementById("contenidoModalDetalle");
+  contenido.innerHTML = `
+    <span class="close" onclick="cerrarModalDetalle()">&times;</span>
+    <h2>${torneo}</h2>
+    <p>${nombre_partido} - ${fecha_partido}</p>
+    ${tablaEquipo(blanco, "Blanco")}
+    ${tablaEquipo(negro, "Negro")}
+    <p><strong>🥅 Goleador:</strong> ${goleador?.jugador || "-"} (${goleador?.goles || 0} goles)</p>
+    <p><strong>⭐ Figura:</strong> ${figura}</p>
+  `;
+  modal.style.display = "block";
+}
+
+function cerrarModalDetalle() {
+  document.getElementById("modalDetallePartido").style.display = "none";
 }
