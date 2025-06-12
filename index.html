@@ -12,11 +12,21 @@
     <header>
       <img src="banner.png" alt="Banner Torneo" />
       <h1>Torneo de Fútbol Martes</h1>
+      <div class="top-controls">
+        <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
+        <div class="filtro-fechas-inline">
+          <label for="selectAnio">Año:</label>
+          <select id="selectAnio"></select>
+          <label for="selectMes">Mes:</label>
+          <select id="selectMes"></select>
+          <button class="btn secundario" onclick="filtrarPartidosPorMes()">🔍 Buscar Partidos</button>
+        </div>
+      </div>
     </header>
 
     <main>
-      <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
-      <section id="ultimosPartidos" class="cards-container"></section>
+      <section id="partidosResumen" class="cards-container"></section>
+
       <section class="estadisticas">
         <h2>Estadísticas del Torneo</h2>
         <label for="tipoGrafico">Ver ranking por:</label>
@@ -27,23 +37,19 @@
         </select>
         <canvas id="graficoJugadores"></canvas>
       </section>
-<div class="filtro-fechas">
-  <label for="selectAnio">Año:</label>
-  <select id="selectAnio"></select>
-  <label for="selectMes">Mes:</label>
-  <select id="selectMes"></select>
-  <button class="btn secundario" onclick="filtrarPartidosPorMes()">🔍 Buscar Partidos</button>
-</div>
-<div id="partidosFiltrados" class="scroll-horizontal"></div>
-
-<!-- Modal Detalle Partido -->
-<div id="modalDetallePartido" class="modal">
-  <div class="modal-content" id="contenidoModalDetalle">
-    <span class="close" onclick="cerrarModalDetalle()">&times;</span>
-  </div>
-</div>
-
     </main>
+
+    <!-- Modal General -->
+    <div id="modalGeneral" class="modal">
+      <div class="modal-content" id="contenidoModalGeneral">
+        <span class="close" onclick="cerrarModalGeneral()">&times;</span>
+      </div>
+    </div>
+
+    <!-- Overlay Global -->
+    <div id="overlay" class="overlay" onclick="cerrarModalGeneral(); cerrarModalFormulario(); cerrarModalJugador();"></div>
+
+    <!-- Modal Formulario Partido -->
     <div id="modalFormulario" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalFormulario()">&times;</span>
@@ -84,6 +90,8 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal Agregar Jugador -->
     <div id="modalJugador" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalJugador()">&times;</span>
@@ -95,8 +103,7 @@
       </div>
     </div>
 
-    <div id="overlay" class="overlay" onclick="cerrarModalFormulario(); cerrarModalJugador();"></div>
-
     <script src="script.js"></script>
-  </body>
+  </div>
+</body>
 </html>
