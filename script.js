@@ -285,3 +285,7 @@ function mostrarDetallePartido(jugadores) {
 function cerrarModalDetalle() {
   document.getElementById("modalDetallePartido").style.display = "none";
 }
+function cerrarModalGeneral() {
+  document.getElementById("modalGeneral").classList.remove("show");
+  document.getElementById("overlay").style.display = "none";
+}
