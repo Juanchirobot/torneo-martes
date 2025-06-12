@@ -70,10 +70,11 @@ function calcularPuntos() {
                     : golesNegro > golesBlanco ? { Blanco: 0, Negro: 3 }
                     : { Blanco: 1, Negro: 1 };
 
-    const figuras = formaciones
-      .filter(f => f.fecha_partido === jugadoresPartido[0].fecha_partido &&
-                   f.nombre_partido === jugadoresPartido[0].nombre_partido)
-      .map(f => f.id_jugador_votado);
+const figura = formaciones.find(f =>
+  f.fecha_partido === jugadoresPartido[0].fecha_partido &&
+  f.nombre_partido === jugadoresPartido[0].nombre_partido
+)?.id_jugador_votado;
+
 
     jugadoresPartido.forEach(j => {
       if (!puntos[j.jugador]) {
@@ -84,9 +85,9 @@ function calcularPuntos() {
       puntos[j.jugador].goles += j.goles;
       puntos[j.jugador].puntos += resultado[j.equipo] || 0;
 
-      if (figuras.includes(j.id_jugador)) {
-        puntos[j.jugador].puntos += 1;
-      }
+if (j.id_jugador === figura) {
+  puntos[j.jugador].puntos += 1;
+}
     });
   });
 
