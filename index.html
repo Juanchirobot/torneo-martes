@@ -52,8 +52,9 @@
         <!-- Se carga dinámicamente -->
       </div>
     </div>
+
     <!-- Overlay Global -->
-    <div id="overlay" class="overlay" onclick="cerrarModalGeneral(); cerrarModalFormulario(); cerrarModalJugador(); cerrarModalDetalle();"></div>
+    <div id="overlay" class="overlay" onclick="cerrarTodosLosModales()"></div>
 
     <!-- Modal Formulario Partido -->
     <div id="modalFormulario" class="modal">
@@ -105,13 +106,6 @@
           <input type="text" id="nuevoJugador" placeholder="Nombre del jugador" required />
           <button type="submit">Agregar</button>
         </form>
-      </div>
-    </div>
-
-    <!-- Modal Detalle Partido -->
-    <div id="modalDetallePartido" class="modal">
-      <div class="modal-content" id="contenidoModalDetalle">
-        <!-- contenido dinámico -->
       </div>
     </div>
 
