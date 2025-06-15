@@ -2,42 +2,114 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Torneo Martes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Torneo de Fútbol</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <img src="assets/banner.jpg" alt="Banner Torneo Martes" class="banner">
-    <h1>Torneo Martes</h1>
-  </header>
+  <div id="contenido">
+    <header>
+      <img src="banner.png" alt="Banner Torneo" />
+      <h1>Torneo de Fútbol Martes</h1>
+      <div class="top-controls">
+        <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
+        <div class="filtro-fechas-inline">
+          <label for="selectAnio">Año:</label>
+          <select id="selectAnio"></select>
+          <label for="selectMes">Mes:</label>
+          <select id="selectMes"></select>
+          <button class="btn secundario" onclick="filtrarPartidosPorMes()">🔍 Buscar Partidos</button>
+        </div>
+      </div>
+    </header>
 
-  <main>
-    <section class="acciones">
-      <h2>Subí una imagen con el resultado</h2>
-      <input type="file" id="inputImagen" accept="image/*" />
-      <button id="analizarImagen">Analizar Resultado</button>
-      <p><em>(Funcionalidad en desarrollo)</em></p>
-    </section>
+    <main>
+      <section id="ultimosPartidos" class="cards-container"></section>
+      <section id="partidosFiltrados" class="scroll-horizontal"></section>
+      <section class="estadisticas">
+        <h2>Estadísticas del Torneo</h2>
+        <label for="tipoGrafico">Ver ranking por:</label>
+        <select id="tipoGrafico">
+          <option value="puntos">Puntos</option>
+          <option value="goles">Goles</option>
+          <option value="partidos">Participaciones</option>
+        </select>
+        <canvas id="graficoJugadores"></canvas>
+      </section>
+    </main>
 
-    <section class="posiciones">
-      <h2>Tabla de Posiciones</h2>
-      <button id="cargarCSV">Ver Posiciones</button>
-      <table id="tablaPosiciones">
-        <thead>
-          <tr>
-            <th>Jugador</th>
-            <th>Puntos</th>
-            <th>Goles</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Cargado desde JS -->
-        </tbody>
-      </table>
-    </section>
-  </main>
+    <!-- Modal General -->
+    <div id="modalGeneral" class="modal">
+      <div class="modal-content" id="contenidoModalGeneral">
+        <span class="close" onclick="cerrarModalGeneral()">&times;</span>
+      </div>
+    </div>
 
-  <script src="script.js"></script>
+    <!-- Modal Detalle Partido -->
+    <div id="modalDetallePartido" class="modal">
+      <div class="modal-content" id="contenidoModalDetalle">
+        <!-- Se carga dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Overlay Global -->
+    <div id="overlay" class="overlay" onclick="cerrarTodosLosModales()"></div>
+
+    <!-- Modal Formulario Partido -->
+    <div id="modalFormulario" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="cerrarModalFormulario()">&times;</span>
+        <h2>Cargar Partido</h2>
+        <form id="formPartido">
+          <label for="nombre_torneo">Nombre del Torneo:</label>
+          <input type="text" id="nombre_torneo" required />
+
+          <label for="fecha_inicio_torneo">Fecha de Inicio del Torneo:</label>
+          <input type="date" id="fecha_inicio_torneo" required />
+
+          <label for="fecha_partido">Fecha del Partido:</label>
+          <input type="date" id="fecha_partido" required />
+
+          <label for="nombre_partido">Nombre del Partido:</label>
+          <input type="text" id="nombre_partido" required />
+
+          <div class="equipos-grid" style="display: none;">
+            <div>
+              <h3>⚪ Blanco</h3>
+              <div id="equipoBlanco"></div>
+            </div>
+            <div>
+              <h3>⚫ Negro</h3>
+              <div id="equipoNegro"></div>
+            </div>
+          </div>
+          <label for="selectFigura">Figura del Partido:</label>
+          <select id="selectFigura" required>
+            <option disabled selected>Selecciona figura</option>
+          </select>
+
+          <div class="acciones-form">
+            <button type="submit">Guardar Partido</button>
+            <button type="button" onclick="abrirModalJugador()">Agregar Jugador</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Agregar Jugador -->
+    <div id="modalJugador" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="cerrarModalJugador()">&times;</span>
+        <h2>Agregar nuevo jugador</h2>
+        <form id="formJugador">
+          <input type="text" id="nuevoJugador" placeholder="Nombre del jugador" required />
+          <button type="submit">Agregar</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </div>
 </body>
 </html>

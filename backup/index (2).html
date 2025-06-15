@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Torneo de Amigos</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- MENÚ LATERAL -->
+  <aside class="sidebar">
+    <img src="banner.png" alt="Banner Torneo" class="banner-sidebar" />
+    <nav class="sidebar-nav">
+      <button class="btn" onclick="mostrarTab('partidos')">📅 Últimos Partidos</button>
+      <button class="btn" onclick="mostrarTab('posiciones')">🏆 Posiciones</button>
+      <button class="btn" onclick="mostrarTab('goleadores')">🎯 Goleadores</button>
+      <button class="btn" onclick="mostrarTab('historial')">📜 Historial</button>
+      <button class="btn" onclick="mostrarTab('titulares')">🏃 Titulares</button>
+      <button class="btn" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="contenido-fondo">
+    <main>
+      <!-- Últimos Partidos -->
+      <section id="partidos" class="tab">
+        <h2>Últimos Partidos</h2>
+        <div id="ultimosPartidos"></div>
+      </section>
+
+      <!-- Posiciones -->
+      <section id="posiciones" class="tab" style="display:none;">
+        <h2>Tabla de Posiciones</h2>
+        <table>
+          <thead><tr><th>Jugador</th><th>Puntos</th><th>Goles</th><th>Partidos</th></tr></thead>
+          <tbody id="tablaPosiciones"></tbody>
+        </table>
+      </section>
+
+      <!-- Goleadores -->
+      <section id="goleadores" class="tab" style="display:none;">
+        <h2>Tabla de Goleadores</h2>
+        <table>
+          <thead><tr><th>Jugador</th><th>Goles</th></tr></thead>
+          <tbody id="tablaGoleadores"></tbody>
+        </table>
+      </section>
+
+      <!-- Historial -->
+      <section id="historial" class="tab" style="display:none;">
+        <h2>Historial</h2>
+        <table>
+          <thead><tr><th>Fecha</th><th>Partido</th><th>Jugador</th><th>Equipo</th><th>Goles</th></tr></thead>
+          <tbody id="tablaHistorial"></tbody>
+        </table>
+      </section>
+
+      <!-- Titulares -->
+      <section id="titulares" class="tab" style="display:none;">
+        <h2>Ranking de Titulares</h2>
+        <table>
+          <thead><tr><th>Jugador</th><th>Partidos Jugados</th><th>% Participación</th></tr></thead>
+          <tbody id="tablaTitulares"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- OVERLAY -->
+  <div id="overlay" onclick="cerrarModal()"></div>
+
+  <!-- MODAL NUEVO PARTIDO -->
+  <div id="modalFormulario">
+    <span class="close" onclick="cerrarModal()">×</span>
+    <h3>Cargar Nuevo Partido</h3>
+    <form id="formPartido">
+      <div class="form-grid">
+        <input type="text" id="nombre_torneo" placeholder="Nombre del Torneo" required />
+        <input type="date" id="fecha_partido" required />
+        <input type="text" id="nombre_partido" placeholder="Nombre del Partido" required />
+      </div>
+
+      <div class="form-equipos">
+        <div>
+          <h4>Equipo Blanco</h4>
+          <table class="tabla-form">
+            <thead><tr><th>Jugador</th><th>Goles</th><th>Tarde</th><th>❌</th></tr></thead>
+            <tbody id="tablaBlanco"></tbody>
+          </table>
+          <button type="button" class="btn secundario" onclick="agregarFila('Blanco')">➕ Agregar Jugador</button>
+        </div>
+
+        <div>
+          <h4>Equipo Negro</h4>
+          <table class="tabla-form">
+            <thead><tr><th>Jugador</th><th>Goles</th><th>Tarde</th><th>❌</th></tr></thead>
+            <tbody id="tablaNegro"></tbody>
+          </table>
+          <button type="button" class="btn secundario" onclick="agregarFila('Negro')">➕ Agregar Jugador</button>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <button type="button" class="btn secundario" onclick="abrirAgregarJugador()">➕ Agregar nuevo jugador</button>
+      </div>
+
+      <button type="submit" class="btn primario">✅ Guardar Partido</button>
+    </form>
+  </div>
+
+  <!-- MODAL NUEVO JUGADOR -->
+  <div id="modalJugador" style="display:none;">
+    <span class="close" onclick="cerrarModalJugador()">×</span>
+    <h3>Agregar Nuevo Jugador</h3>
+    <form id="formJugador">
+      <input type="text" id="nuevoJugador" placeholder="Nombre del nuevo jugador" required />
+      <button type="submit" class="btn primario">✅ Agregar Jugador</button>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
