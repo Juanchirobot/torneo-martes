@@ -8,55 +8,32 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="contenido">
-    <header>
-      <img src="banner.png" alt="Banner Torneo" />
-      <h1>Torneo de Fútbol Martes</h1>
-      <div class="top-controls">
-        <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
-        <div class="filtro-fechas-inline">
-          <label for="selectAnio">Año:</label>
-          <select id="selectAnio"></select>
-          <label for="selectMes">Mes:</label>
-          <select id="selectMes"></select>
-          <button class="btn secundario" onclick="filtrarPartidosPorMes()">🔍 Buscar Partidos</button>
-        </div>
-      </div>
-    </header>
+  <main>
+    <div class="container">
+    <div class="tabs">
+      <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
+      <button onclick="mostrarTab('tabEstadisticas')">📈 Estadísticas</button>
+    </div>
 
-    <main>
-      <section id="ultimosPartidos" class="cards-container"></section>
-      <section id="partidosFiltrados" class="scroll-horizontal"></section>
-      <section class="estadisticas">
-        <h2>Estadísticas del Torneo</h2>
+    <div id="tabCargar" class="tab">
+      <button class="btn primario" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
+      <div id="ultimosPartidos" class="cards-container"></div>
+    </div>
+
+    <div id="tabEstadisticas" class="tab" style="display:none;">  
+      <section>
         <label for="tipoGrafico">Ver ranking por:</label>
         <select id="tipoGrafico">
           <option value="puntos">Puntos</option>
           <option value="goles">Goles</option>
           <option value="partidos">Participaciones</option>
         </select>
+      </section>
+      <section>
         <canvas id="graficoJugadores"></canvas>
       </section>
-    </main>
-
-    <!-- Modal General -->
-    <div id="modalGeneral" class="modal">
-      <div class="modal-content" id="contenidoModalGeneral">
-        <span class="close" onclick="cerrarModalGeneral()">&times;</span>
-      </div>
     </div>
 
-    <!-- Modal Detalle Partido -->
-    <div id="modalDetallePartido" class="modal">
-      <div class="modal-content" id="contenidoModalDetalle">
-        <!-- Se carga dinámicamente -->
-      </div>
-    </div>
-
-    <!-- Overlay Global -->
-    <div id="overlay" class="overlay" onclick="cerrarTodosLosModales()"></div>
-
-    <!-- Modal Formulario Partido -->
     <div id="modalFormulario" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalFormulario()">&times;</span>
@@ -73,7 +50,6 @@
 
           <label for="nombre_partido">Nombre del Partido:</label>
           <input type="text" id="nombre_partido" required />
-
           <div class="equipos-grid" style="display: none;">
             <div>
               <h3>⚪ Blanco</h3>
@@ -84,6 +60,7 @@
               <div id="equipoNegro"></div>
             </div>
           </div>
+
           <label for="selectFigura">Figura del Partido:</label>
           <select id="selectFigura" required>
             <option disabled selected>Selecciona figura</option>
@@ -97,7 +74,6 @@
       </div>
     </div>
 
-    <!-- Modal Agregar Jugador -->
     <div id="modalJugador" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalJugador()">&times;</span>
@@ -109,7 +85,10 @@
       </div>
     </div>
 
+    <div id="overlay" class="overlay" onclick="cerrarModalJugador(); cerrarModalFormulario()"></div>
+
+    </div> <!-- container -->
     <script src="script.js"></script>
-  </div>
+  </main>
 </body>
 </html>
