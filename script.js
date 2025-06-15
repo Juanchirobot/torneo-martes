@@ -1,4 +1,3 @@
-
 const SHEET_ID = "15SFBZPl54ZaYNrTeog0COivI0e9wI_eHLcZJTaNUz7Y";
 const API_KEY = "AIzaSyBs6mHcPVaWd4wp3NA3bnwbQOYJ1Rr9p_c";
 const WEBHOOK_PARTIDO_URL = "https://juanchi.app.n8n.cloud/webhook/cargar-partido";
@@ -77,16 +76,70 @@ function renderizarFormulario() {
   document.querySelector(".equipos-grid").style.display = "grid";
 }
 
+// Funciones de manejo de modales
+function cerrarTodosLosModales() {
+  const modales = document.querySelectorAll('.modal');
+  const overlay = document.getElementById('overlay');
+  
+  modales.forEach(modal => {
+    modal.style.display = 'none';
+  });
+  
+  overlay.style.display = 'none';
+}
+
 function abrirModalFormulario() {
-  document.getElementById("modalFormulario").classList.add("show");
-  document.getElementById("overlay").style.display = "block";
+  const modal = document.getElementById("modalFormulario");
+  const overlay = document.getElementById("overlay");
+  
+  overlay.style.display = "block";
+  modal.style.display = "flex";
   renderizarFormulario();
 }
 
 function cerrarModalFormulario() {
-  document.getElementById("modalFormulario").classList.remove("show");
-  document.getElementById("overlay").style.display = "none";
+  const modal = document.getElementById("modalFormulario");
+  const overlay = document.getElementById("overlay");
+  
+  modal.style.display = "none";
+  overlay.style.display = "none";
+  document.getElementById("formPartido").reset();
+  document.querySelector(".equipos-grid").style.display = "none";
 }
+
+function abrirModalJugador() {
+  const modal = document.getElementById("modalJugador");
+  const overlay = document.getElementById("overlay");
+  
+  overlay.style.display = "block";
+  modal.style.display = "flex";
+}
+
+function cerrarModalJugador() {
+  const modal = document.getElementById("modalJugador");
+  const overlay = document.getElementById("overlay");
+  
+  modal.style.display = "none";
+  overlay.style.display = "none";
+  document.getElementById("formJugador").reset();
+}
+
+function cerrarModalDetalle() {
+  const modal = document.getElementById("modalDetallePartido");
+  const overlay = document.getElementById("overlay");
+  
+  modal.style.display = "none";
+  overlay.style.display = "none";
+}
+
+function cerrarModalGeneral() {
+  const modal = document.getElementById("modalGeneral");
+  const overlay = document.getElementById("overlay");
+  
+  modal.style.display = "none";
+  overlay.style.display = "none";
+}
+
 function obtenerDatosFormulario() {
   const torneo = document.getElementById("nombre_torneo").value.trim();
   const fecha_inicio_torneo = document.getElementById("fecha_inicio_torneo").value.trim();
@@ -281,8 +334,4 @@ function mostrarDetallePartido(jugadores) {
     <p><strong>⭐ Figura:</strong> ${figura}</p>
   `;
   modal.style.display = "flex";
-}
-
-function cerrarModalDetalle() {
-  document.getElementById("modalDetallePartido").style.display = "none";
 }
