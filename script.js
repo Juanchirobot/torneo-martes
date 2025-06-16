@@ -9,19 +9,20 @@ let chartJugadores;
 
 async function cargarDatos() {
   try {
-const [jugRes, partRes, formRes] = await Promise.all([
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`),
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`),
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Formacion?key=${API_KEY}`)
-]);
-
+    const [jugRes, partRes, formRes] = await Promise.all([
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`),
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`),
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Formacion?key=${API_KEY}`)
+    ]);
 
     const jugData = await jugRes.json();
     const partData = await partRes.json();
     const formData = await formRes.json();
 
     jugadores = jugData.values.slice(1).map(([id, nombre, tel]) => ({
-      id: parseInt(id), nombre, tel
+      id: parseInt(id),
+      nombre,
+      tel
     }));
 
     partidos = partData.values.slice(1).map(row => ({
@@ -54,7 +55,7 @@ function calcularPuntos() {
 
   const partidosAgrupados = {};
   partidos.forEach(p => {
-    const clave = ${p.fecha_partido}__${p.nombre_partido};
+    const clave = `${p.fecha_partido}__${p.nombre_partido}`;
     if (!partidosAgrupados[clave]) partidosAgrupados[clave] = [];
     partidosAgrupados[clave].push(p);
   });
@@ -93,12 +94,11 @@ function calcularPuntos() {
 
   return puntos;
 }
-
 function renderUltimosPartidos() {
   const agrupados = {};
 
   partidos.forEach(p => {
-    const clave = ${p.fecha_partido} - ${p.nombre_partido};
+    const clave = `${p.fecha_partido} - ${p.nombre_partido}`;
     if (!agrupados[clave]) agrupados[clave] = [];
     agrupados[clave].push(p);
   });
@@ -124,20 +124,18 @@ function renderUltimosPartidos() {
     );
     figura = jugadores.find(j => j.id_jugador === formacion?.id_jugador_votado)?.jugador || "-";
 
-    return 
-      <div class="cardPartido">
+    return `
+      <div class="cardPartidoCompacto">
         <strong>${clave}</strong><br/>
         ⚪ ${golesBlanco} vs ${golesNegro} ⚫<br/>
         🥅 Goleador: ${goleador.jugador || "-"}<br/>
         ⭐ Figura: ${figura}
       </div>
-    ;
+    `;
   });
 
   document.getElementById("ultimosPartidos").innerHTML = cards.join("");
-
 }
-
 function actualizarGrafico(tipo = "puntos") {
   const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
   if (!ctx) return;
@@ -178,20 +176,18 @@ function actualizarGrafico(tipo = "puntos") {
     }
   });
 }
-// 🎯 Eventos al cargar la página
+
+// 🎯 Inicialización al cargar
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarDatos();
   actualizarGrafico("puntos");
   renderUltimosPartidos();
-  inicializarFiltrosFecha();
-
-
+  inicializarFiltrosFecha?.();
 
   document.getElementById("tipoGrafico")?.addEventListener("change", (e) => {
     actualizarGrafico(e.target.value);
   });
 });
-
 // 🎛 Cambiar entre pestañas
 function mostrarTab(tabId) {
   document.querySelectorAll(".tab").forEach(tab => {
@@ -273,7 +269,6 @@ function poblarFormulario() {
       defaultOpt.disabled = true;
       defaultOpt.selected = true;
       select.appendChild(defaultOpt);
-
       jugadores.forEach(j => {
         const opt = document.createElement("option");
         opt.value = j.nombre;
@@ -320,7 +315,7 @@ function poblarFormulario() {
 }
 // 🧩 Obtener datos de jugadores del formulario
 function obtenerJugadores(equipo) {
-  return Array.from(document.querySelectorAll(#equipo${equipo} .filaJugador)).map(fila => {
+  return Array.from(document.querySelectorAll(`#equipo${equipo} .filaJugador`)).map(fila => {
     const select = fila.querySelector("select");
     const nombre = select.value;
     const goles = parseInt(fila.querySelector(".inputGoles").value || '0');
@@ -353,7 +348,6 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
   const blancos = obtenerJugadores("Blanco");
   const negros = obtenerJugadores("Negro");
   const todos = [...blancos, ...negros];
-
   const formacion = [{
     fecha_partido,
     nombre_partido,
@@ -378,7 +372,8 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
     mensajeWhatsApp: todos.map(j => ({
       nombre: j.jugador_nombre,
       telefono: j.tel,
-      mensaje: 📢 ¡Hola ${j.jugador_nombre}! Se cargó el partido "${nombre_partido}" del torneo ${torneo} (${fecha_partido}).\nPodés ver tus estadísticas y votar a la figura. Recordá que si no votás en 24 horas, se te resta 1 punto.
+      mensaje: `📢 ¡Hola ${j.jugador_nombre}! Se cargó el partido "${nombre_partido}" del torneo ${torneo} (${fecha_partido}).
+Podés ver tus estadísticas y votar a la figura. Recordá que si no votás en 24 horas, se te resta 1 punto.`
     }))
   };
 
@@ -397,7 +392,6 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
     alert("No se pudo enviar el partido.");
   }
 });
-
 // 🎯 Preparar opciones de votación figura
 function prepararVotacion(jugadoresPartido) {
   const select = document.getElementById("selectFigura");
@@ -419,6 +413,7 @@ function prepararVotacion(jugadoresPartido) {
 
   select.style.display = "block";
 }
+
 function filtrarPartidosPorMes() {
   const anio = document.getElementById("selectAnio").value;
   const mes = document.getElementById("selectMes").value;
@@ -433,12 +428,11 @@ function filtrarPartidosPorMes() {
     const anioStr = fecha.getFullYear();
 
     if (fechaMes === mes && String(anioStr) === anio) {
-      const clave = ${p.fecha_partido}__${p.nombre_partido};
+      const clave = `${p.fecha_partido}__${p.nombre_partido}`;
       if (!partidosAgrupados[clave]) partidosAgrupados[clave] = [];
       partidosAgrupados[clave].push(p);
     }
   });
-
   Object.entries(partidosAgrupados).forEach(([clave, jugadores]) => {
     const [fecha, nombre_partido] = clave.split("__");
     const torneo = jugadores[0].torneo;
@@ -447,15 +441,16 @@ function filtrarPartidosPorMes() {
 
     const div = document.createElement("div");
     div.className = "cardPartidoCompacto";
-    div.innerHTML = 
+    div.innerHTML = `
       <strong>${torneo}</strong><br/>
       ${nombre_partido} (${fecha})<br/>
       ⚪ ${golesBlanco} - ${golesNegro} ⚫
-    ;
+    `;
     div.onclick = () => mostrarDetallePartido(jugadores);
     contenedor.appendChild(div);
   });
 }
+
 function mostrarDetallePartido(jugadores) {
   if (!jugadores || jugadores.length === 0) return;
 
@@ -467,33 +462,32 @@ function mostrarDetallePartido(jugadores) {
   const golesBlanco = blanco.reduce((acc, j) => acc + j.goles, 0);
   const golesNegro = negro.reduce((acc, j) => acc + j.goles, 0);
 
-  const puntajes = calcularPuntos(); // Reutilizamos lógica actual
+  const puntajes = calcularPuntos();
   const goleador = jugadores.reduce((max, j) => j.goles > (max?.goles || 0) ? j : max, null);
 
-  const figuraData = formaciones.find(f => f.fecha_partido === fecha_partido && f.nombre_partido === nombre_partido)
-    || votaciones.find(v => v.fecha_partido === fecha_partido && v.nombre_partido === nombre_partido);
+  const figuraData = formaciones.find(f => f.fecha_partido === fecha_partido && f.nombre_partido === nombre_partido);
   const figura = jugadores.find(j => j.id_jugador === figuraData?.id_jugador_votado)?.jugador || "-";
 
-  const tablaEquipo = (lista, equipo) => 
+  const tablaEquipo = (lista, equipo) => `
     <h3>${equipo === "Blanco" ? "⚪ Blanco" : "⚫ Negro"}</h3>
     <table>
       <thead><tr><th>Jugador</th><th>Goles</th><th>Puntos</th></tr></thead>
       <tbody>
         ${lista.map(j => {
           const puntosJugador = puntajes[j.jugador]?.puntos || 0;
-          return <tr>
+          return `<tr>
             <td>${j.jugador}</td>
             <td>${j.goles}</td>
             <td style="color:${puntosJugador < 0 ? 'red' : 'inherit'}">${puntosJugador}</td>
-          </tr>;
+          </tr>`;
         }).join("")}
       </tbody>
     </table>
-  ;
+  `;
 
   const modal = document.getElementById("modalDetallePartido");
   const contenido = document.getElementById("contenidoModalDetalle");
-  contenido.innerHTML = 
+  contenido.innerHTML = `
     <span class="close" onclick="cerrarModalDetalle()">&times;</span>
     <h2>${torneo}</h2>
     <p>${nombre_partido} - ${fecha_partido}</p>
@@ -501,10 +495,19 @@ function mostrarDetallePartido(jugadores) {
     ${tablaEquipo(negro, "Negro")}
     <p><strong>🥅 Goleador:</strong> ${goleador?.jugador || "-"} (${goleador?.goles || 0} goles)</p>
     <p><strong>⭐ Figura:</strong> ${figura}</p>
-  ;
+  `;
   modal.style.display = "block";
 }
 
 function cerrarModalDetalle() {
   document.getElementById("modalDetallePartido").style.display = "none";
 }
+
+// Exponer funciones al scope global
+window.abrirModalFormulario = abrirModalFormulario;
+window.cerrarModalFormulario = cerrarModalFormulario;
+window.abrirModalJugador = abrirModalJugador;
+window.cerrarModalJugador = cerrarModalJugador;
+window.filtrarPartidosPorMes = filtrarPartidosPorMes;
+window.cerrarModalDetalle = cerrarModalDetalle;
+window.mostrarTab = mostrarTab;
