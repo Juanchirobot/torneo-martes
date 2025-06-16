@@ -9,11 +9,12 @@ let chartJugadores;
 
 async function cargarDatos() {
   try {
-    const [jugRes, partRes, formRes] = await Promise.all([
-      fetch(https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}),
-      fetch(https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}),
-      fetch(https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Formacion?key=${API_KEY})
-    ]);
+const [jugRes, partRes, formRes] = await Promise.all([
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Jugadores?key=${API_KEY}`),
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Partidos?key=${API_KEY}`),
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Formacion?key=${API_KEY}`)
+]);
+
 
     const jugData = await jugRes.json();
     const partData = await partRes.json();
