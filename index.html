@@ -8,32 +8,42 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <main>
-    <div class="container">
-    <div class="tabs">
-      <button onclick="mostrarTab('tabCargar')">📋 Cargar Partido</button>
-      <button onclick="mostrarTab('tabEstadisticas')">📈 Estadísticas</button>
-    </div>
+  <div id="contenido">
+    <header>
+      <img src="banner.png" alt="Banner Torneo" />
+      <h1>Torneo de Fútbol Martes</h1>
+    </header>
 
-    <div id="tabCargar" class="tab">
-      <button class="btn primario" onclick="abrirModalFormulario()">➕ Nuevo Partido</button>
-      <div id="ultimosPartidos" class="cards-container"></div>
-    </div>
-
-    <div id="tabEstadisticas" class="tab" style="display:none;">  
-      <section>
+    <main>
+      <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
+      <section id="ultimosPartidos" class="cards-container"></section>
+      <section class="estadisticas">
+        <h2>Estadísticas del Torneo</h2>
         <label for="tipoGrafico">Ver ranking por:</label>
         <select id="tipoGrafico">
           <option value="puntos">Puntos</option>
           <option value="goles">Goles</option>
           <option value="partidos">Participaciones</option>
         </select>
-      </section>
-      <section>
         <canvas id="graficoJugadores"></canvas>
       </section>
-    </div>
+<div class="filtro-fechas">
+  <label for="selectAnio">Año:</label>
+  <select id="selectAnio"></select>
+  <label for="selectMes">Mes:</label>
+  <select id="selectMes"></select>
+  <button class="btn secundario" onclick="filtrarPartidosPorMes()">🔍 Buscar Partidos</button>
+</div>
+<div id="partidosFiltrados" class="scroll-horizontal"></div>
 
+<!-- Modal Detalle Partido -->
+<div id="modalDetallePartido" class="modal">
+  <div class="modal-content" id="contenidoModalDetalle">
+    <span class="close" onclick="cerrarModalDetalle()">&times;</span>
+  </div>
+</div>
+
+    </main>
     <div id="modalFormulario" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalFormulario()">&times;</span>
@@ -50,6 +60,7 @@
 
           <label for="nombre_partido">Nombre del Partido:</label>
           <input type="text" id="nombre_partido" required />
+
           <div class="equipos-grid" style="display: none;">
             <div>
               <h3>⚪ Blanco</h3>
@@ -73,7 +84,6 @@
         </form>
       </div>
     </div>
-
     <div id="modalJugador" class="modal">
       <div class="modal-content">
         <span class="close" onclick="cerrarModalJugador()">&times;</span>
@@ -85,10 +95,8 @@
       </div>
     </div>
 
-    <div id="overlay" class="overlay" onclick="cerrarModalJugador(); cerrarModalFormulario()"></div>
+    <div id="overlay" class="overlay" onclick="cerrarModalFormulario(); cerrarModalJugador();"></div>
 
-    </div> <!-- container -->
     <script src="script.js"></script>
-  </main>
-</body>
+  </body>
 </html>
