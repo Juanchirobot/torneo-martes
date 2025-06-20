@@ -5,7 +5,7 @@ const WEBHOOK_PARTIDO_URL = "https://juanchi.app.n8n.cloud/webhook/cargar-partid
 let jugadores = [];
 let partidos = [];
 let formaciones = [];
-let chartJugadores;
+let chartJugadores = null;
 
 async function cargarDatos() {
   try {
@@ -19,10 +19,12 @@ async function cargarDatos() {
     const partData = await partRes.json();
     const formData = await formRes.json();
 
-    jugadores = jugData.values.slice(1).map(([id, nombre, tel]) => ({
+    jugadores = jugData.values.slice(1).map(([fechaAlta, id, nombre, estado, tel]) => ({
       id: parseInt(id),
       nombre,
-      tel
+      estado,
+      tel,
+      fechaAlta
     }));
 
     partidos = partData.values.slice(1).map(row => ({
@@ -34,22 +36,23 @@ async function cargarDatos() {
       id_jugador: parseInt(row[5]),
       equipo: row[6],
       goles: parseInt(row[7]) || 0,
-      flageado: parseInt(row[8]) || 0,
-      llego_tarde: parseInt(row[9]) || 0,
-      minutos_tarde: parseInt(row[10]) || 0,
+      flag_figura: parseInt(row[8]) || 0,
+      puntos: parseInt(row[9]) || 0
     }));
 
-    formaciones = formData.values.slice(1).map(([fecha, nombrePartido, votante, figura, idFigura]) => ({
+    formaciones = formData.values.slice(1).map(([fecha, nombrePartido, votante, figura, idFigura, tel, flag]) => ({
       fecha_partido: fecha,
       nombre_partido: nombrePartido,
+      votante,
       figura_votada: figura,
-      id_jugador_votado: parseInt(idFigura)
+      id_jugador_votado: parseInt(idFigura),
+      flag_ausencia_voto: parseInt(flag || 0)
     }));
-
   } catch (err) {
     console.error("❌ Error cargando datos:", err);
   }
 }
+
 function calcularPuntos() {
   const puntos = {};
 
@@ -77,9 +80,15 @@ function calcularPuntos() {
                    f.nombre_partido === jugadoresPartido[0].nombre_partido)
       .map(f => f.id_jugador_votado);
 
+    // identificar goleador si hay uno único
+    const maxGoles = Math.max(...jugadoresPartido.map(j => j.goles));
+    const goleadores = jugadoresPartido.filter(j => j.goles === maxGoles);
+    const hayUnicoGoleador = goleadores.length === 1;
+    const idUnicoGoleador = hayUnicoGoleador ? goleadores[0].id_jugador : null;
+
     jugadoresPartido.forEach(j => {
       if (!puntos[j.jugador]) {
-        puntos[j.jugador] = { puntos: 0, goles: 0, partidos: 0 };
+        puntos[j.jugador] = { puntos: 0, goles: 0, partidos: 0, figura: 0 };
       }
 
       puntos[j.jugador].partidos += 1;
@@ -87,6 +96,11 @@ function calcularPuntos() {
       puntos[j.jugador].puntos += resultado[j.equipo] || 0;
 
       if (figuras.includes(j.id_jugador)) {
+        puntos[j.jugador].puntos += 1;
+        puntos[j.jugador].figura += 1;
+      }
+
+      if (j.id_jugador === idUnicoGoleador) {
         puntos[j.jugador].puntos += 1;
       }
     });
@@ -98,25 +112,24 @@ function renderUltimosPartidos() {
   const agrupados = {};
 
   partidos.forEach(p => {
-    const clave = `${p.fecha_partido} - ${p.nombre_partido}`;
+    const clave = `${p.fecha_partido}__${p.nombre_partido}`;
     if (!agrupados[clave]) agrupados[clave] = [];
     agrupados[clave].push(p);
   });
 
   const ultimos = Object.entries(agrupados)
-    .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+    .sort((a, b) => new Date(b[0].split("__")[0]) - new Date(a[0].split("__")[0]))
     .slice(0, 3);
 
   const cards = ultimos.map(([clave, jugadores]) => {
     let golesBlanco = 0, golesNegro = 0;
-    let goleador = jugadores[0] || {};
-    let figura = "";
+    let figura = "-", goleador = "-";
 
-    jugadores.forEach(j => {
-      if (j.equipo === "Blanco") golesBlanco += j.goles;
-      else golesNegro += j.goles;
-      if (j.goles > (goleador.goles || 0)) goleador = j;
-    });
+    const blanco = jugadores.filter(j => j.equipo === "Blanco");
+    const negro = jugadores.filter(j => j.equipo === "Negro");
+
+    golesBlanco = blanco.reduce((acc, j) => acc + j.goles, 0);
+    golesNegro = negro.reduce((acc, j) => acc + j.goles, 0);
 
     const formacion = formaciones.find(f =>
       f.fecha_partido === jugadores[0].fecha_partido &&
@@ -124,11 +137,16 @@ function renderUltimosPartidos() {
     );
     figura = jugadores.find(j => j.id_jugador === formacion?.id_jugador_votado)?.jugador || "-";
 
+    const maxGoles = Math.max(...jugadores.map(j => j.goles));
+    const candidatos = jugadores.filter(j => j.goles === maxGoles);
+    goleador = candidatos.length === 1 ? candidatos[0].jugador : "-";
+
+    const [fecha, nombrePartido] = clave.split("__");
     return `
       <div class="cardPartidoCompacto">
-        <strong>${clave}</strong><br/>
+        <strong>${fecha} - ${nombrePartido}</strong><br/>
         ⚪ ${golesBlanco} vs ${golesNegro} ⚫<br/>
-        🥅 Goleador: ${goleador.jugador || "-"}<br/>
+        🥅 Goleador: ${goleador}<br/>
         ⭐ Figura: ${figura}
       </div>
     `;
@@ -136,6 +154,7 @@ function renderUltimosPartidos() {
 
   document.getElementById("ultimosPartidos").innerHTML = cards.join("");
 }
+
 function actualizarGrafico(tipo = "puntos") {
   const ctx = document.getElementById("graficoJugadores")?.getContext("2d");
   if (!ctx) return;
@@ -154,13 +173,11 @@ function actualizarGrafico(tipo = "puntos") {
     type: "bar",
     data: {
       labels,
-      datasets: [
-        {
-          label: tipo.charAt(0).toUpperCase() + tipo.slice(1),
-          data,
-          backgroundColor: "#26c6da"
-        }
-      ]
+      datasets: [{
+        label: tipo.charAt(0).toUpperCase() + tipo.slice(1),
+        data,
+        backgroundColor: "#26c6da"
+      }]
     },
     options: {
       indexAxis: "y",
@@ -177,17 +194,41 @@ function actualizarGrafico(tipo = "puntos") {
   });
 }
 
+function renderHistorico() {
+  const contenedor = document.getElementById("historialJugadores");
+  if (!contenedor) return;
+
+  const tipos = ["puntos", "goles", "figura"];
+  const datos = calcularPuntos();
+
+  contenedor.innerHTML = tipos.map(tipo => {
+    const ordenados = Object.entries(datos)
+      .sort((a, b) => b[1][tipo] - a[1][tipo])
+      .slice(0, 5);
+
+    return `
+      <div class="cardPartidoCompacto">
+        <h3>🏆 Top ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</h3>
+        <ol>
+          ${ordenados.map(([nombre, stats]) => `<li>${nombre} (${stats[tipo]})</li>`).join("")}
+        </ol>
+      </div>
+    `;
+  }).join("");
+}
 // 🎯 Inicialización al cargar
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarDatos();
   actualizarGrafico("puntos");
   renderUltimosPartidos();
+  renderHistorico();
   inicializarFiltrosFecha?.();
 
   document.getElementById("tipoGrafico")?.addEventListener("change", (e) => {
     actualizarGrafico(e.target.value);
   });
 });
+
 // 🎛 Cambiar entre pestañas
 function mostrarTab(tabId) {
   document.querySelectorAll(".tab").forEach(tab => {
@@ -215,7 +256,7 @@ function cerrarModalFormulario() {
   document.querySelector(".equipos-grid").style.display = "none";
 }
 
-// 🪟 Abrir y cerrar modal de jugador nuevo
+// 🪟 Modal Agregar Jugador
 function abrirModalJugador() {
   const modal = document.getElementById("modalJugador");
   const overlay = document.getElementById("overlay");
@@ -231,19 +272,29 @@ function cerrarModalJugador() {
   overlay.style.display = "none";
   setTimeout(() => (modal.style.display = "none"), 300);
 }
+
 // ➕ Agregar nuevo jugador desde el modal
 document.getElementById("formJugador").addEventListener("submit", e => {
   e.preventDefault();
   const nombre = document.getElementById("nuevoJugador").value.trim();
-  if (!nombre) return alert("El nombre no puede estar vacío");
+
+  if (!nombre) {
+    alert("El nombre no puede estar vacío");
+    return;
+  }
+
+  if (jugadores.some(j => j.nombre.toLowerCase() === nombre.toLowerCase())) {
+    alert("⚠️ Ese nombre ya está registrado. Agregá una letra o referencia.");
+    return;
+  }
 
   const nuevoID = jugadores.length ? Math.max(...jugadores.map(j => j.id)) + 1 : 1;
-  jugadores.push({ id: nuevoID, nombre, tel: '', nuevo: true });
+  jugadores.push({ id: nuevoID, nombre, tel: '', estado: 'suplente', nuevo: true });
   poblarFormulario();
   cerrarModalJugador();
 });
 
-// Mostrar formulario de equipos al escribir nombre del partido
+// Al escribir nombre de partido se activa el grid de equipos
 document.getElementById("nombre_partido").addEventListener("input", () => {
   const valor = document.getElementById("nombre_partido").value.trim();
   if (valor) {
@@ -251,7 +302,73 @@ document.getElementById("nombre_partido").addEventListener("input", () => {
     poblarFormulario();
   }
 });
+// 📨 Enviar formulario completo a n8n
+document.getElementById("formPartido")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const torneo = document.getElementById("nombre_torneo").value.trim();
+  const fecha_inicio_torneo = document.getElementById("fecha_inicio_torneo").value;
+  const fecha_partido = document.getElementById("fecha_partido").value;
+  const nombre_partido = document.getElementById("nombre_partido").value.trim();
+  const figura_nombre = document.getElementById("selectFigura").value;
 
+  const blancos = obtenerJugadores("Blanco");
+  const negros = obtenerJugadores("Negro");
+  const todos = [...blancos, ...negros];
+
+  const figuraID = jugadores.find(j => j.nombre === figura_nombre)?.id || null;
+
+  const formacion = [{
+    fecha_partido,
+    nombre_partido,
+    votante: "web",
+    figura_votada: figura_nombre,
+    id_jugador_votado: figuraID,
+    telefono: "",
+    flag_ausencia_voto: 0
+  }];
+
+  const nuevoNombre = document.getElementById("nuevoJugador").value.trim();
+  let nuevoJugador = null;
+
+  if (nuevoNombre && !jugadores.some(j => j.nombre.toLowerCase() === nuevoNombre.toLowerCase())) {
+    const nuevoID = jugadores.length ? Math.max(...jugadores.map(j => j.id)) + 1 : 1;
+    nuevoJugador = {
+      id: nuevoID,
+      nombre: nuevoNombre,
+      estado: "suplente",
+      telefono: "",
+      fecha_alta: new Date().toISOString().split("T")[0]
+    };
+  }
+
+  const payload = {
+    jugadores: todos.map(j => ({
+      ...j,
+      torneo,
+      fecha_inicio_torneo,
+      fecha_partido,
+      nombre_partido
+    })),
+    formacion,
+    nuevoJugador
+  };
+
+  try {
+    await fetch(WEBHOOK_PARTIDO_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    alert("✅ Partido enviado correctamente.");
+    document.getElementById("formPartido").reset();
+    document.querySelector(".equipos-grid").style.display = "none";
+    cerrarModalFormulario();
+    location.reload(); // para ver el impacto en tarjetas y gráficos
+  } catch (err) {
+    console.error("❌ Error al enviar", err);
+    alert("No se pudo enviar el partido.");
+  }
+});
 // Renderizar los select y inputs por equipo
 function poblarFormulario() {
   ["Blanco", "Negro"].forEach(equipo => {
@@ -264,11 +381,13 @@ function poblarFormulario() {
 
       const select = document.createElement("select");
       select.required = true;
+
       const defaultOpt = document.createElement("option");
       defaultOpt.text = "Selecciona jugador";
       defaultOpt.disabled = true;
       defaultOpt.selected = true;
       select.appendChild(defaultOpt);
+
       jugadores.forEach(j => {
         const opt = document.createElement("option");
         opt.value = j.nombre;
@@ -311,9 +430,11 @@ function poblarFormulario() {
       contenedor.appendChild(fila);
     }
   });
+
   prepararVotacion([]);
 }
-// 🧩 Obtener datos de jugadores del formulario
+
+// Obtener datos del formulario
 function obtenerJugadores(equipo) {
   return Array.from(document.querySelectorAll(`#equipo${equipo} .filaJugador`)).map(fila => {
     const select = fila.querySelector("select");
@@ -336,63 +457,7 @@ function obtenerJugadores(equipo) {
   });
 }
 
-// 📨 Enviar formulario completo a n8n
-document.getElementById("formPartido")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const torneo = document.getElementById("nombre_torneo").value.trim();
-  const fecha_inicio_torneo = document.getElementById("fecha_inicio_torneo").value;
-  const fecha_partido = document.getElementById("fecha_partido").value;
-  const nombre_partido = document.getElementById("nombre_partido").value.trim();
-  const figura_nombre = document.getElementById("selectFigura").value;
-
-  const blancos = obtenerJugadores("Blanco");
-  const negros = obtenerJugadores("Negro");
-  const todos = [...blancos, ...negros];
-  const formacion = [{
-    fecha_partido,
-    nombre_partido,
-    votante: "web",
-    figura_votada: "voto manual",
-    id_jugador_votado: jugadores.find(j => j.nombre === figura_nombre)?.id || null
-  }];
-
-  let nuevoJugador = null;
-  const nuevoNombre = document.getElementById("nuevoJugador").value.trim();
-  if (nuevoNombre && !jugadores.some(j => j.nombre === nuevoNombre)) {
-    const nuevoID = jugadores.length ? Math.max(...jugadores.map(j => j.id)) + 1 : 1;
-    nuevoJugador = { id: nuevoID, nombre: nuevoNombre, tel: "" };
-  }
-
-  const payload = {
-    jugadores: todos.map(j => ({
-      ...j, torneo, fecha_inicio_torneo, fecha_partido, nombre_partido
-    })),
-    formacion,
-    nuevoJugador,
-    mensajeWhatsApp: todos.map(j => ({
-      nombre: j.jugador_nombre,
-      telefono: j.tel,
-      mensaje: `📢 ¡Hola ${j.jugador_nombre}! Se cargó el partido "${nombre_partido}" del torneo ${torneo} (${fecha_partido}).
-Podés ver tus estadísticas y votar a la figura. Recordá que si no votás en 24 horas, se te resta 1 punto.`
-    }))
-  };
-
-  try {
-    await fetch(WEBHOOK_PARTIDO_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    alert("✅ Partido enviado correctamente.");
-    document.getElementById("formPartido").reset();
-    document.querySelector(".equipos-grid").style.display = "none";
-    cerrarModalFormulario();
-  } catch (err) {
-    console.error("❌ Error al enviar", err);
-    alert("No se pudo enviar el partido.");
-  }
-});
-// 🎯 Preparar opciones de votación figura
+// Preparar opciones del select de figura
 function prepararVotacion(jugadoresPartido) {
   const select = document.getElementById("selectFigura");
   if (!select) return;
@@ -414,100 +479,3 @@ function prepararVotacion(jugadoresPartido) {
   select.style.display = "block";
 }
 
-function filtrarPartidosPorMes() {
-  const anio = document.getElementById("selectAnio").value;
-  const mes = document.getElementById("selectMes").value;
-  const contenedor = document.getElementById("partidosFiltrados");
-  contenedor.innerHTML = "";
-
-  const partidosAgrupados = {};
-
-  partidos.forEach(p => {
-    const fecha = new Date(p.fecha_partido);
-    const fechaMes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const anioStr = fecha.getFullYear();
-
-    if (fechaMes === mes && String(anioStr) === anio) {
-      const clave = `${p.fecha_partido}__${p.nombre_partido}`;
-      if (!partidosAgrupados[clave]) partidosAgrupados[clave] = [];
-      partidosAgrupados[clave].push(p);
-    }
-  });
-  Object.entries(partidosAgrupados).forEach(([clave, jugadores]) => {
-    const [fecha, nombre_partido] = clave.split("__");
-    const torneo = jugadores[0].torneo;
-    const golesBlanco = jugadores.filter(j => j.equipo === "Blanco").reduce((acc, j) => acc + j.goles, 0);
-    const golesNegro = jugadores.filter(j => j.equipo === "Negro").reduce((acc, j) => acc + j.goles, 0);
-
-    const div = document.createElement("div");
-    div.className = "cardPartidoCompacto";
-    div.innerHTML = `
-      <strong>${torneo}</strong><br/>
-      ${nombre_partido} (${fecha})<br/>
-      ⚪ ${golesBlanco} - ${golesNegro} ⚫
-    `;
-    div.onclick = () => mostrarDetallePartido(jugadores);
-    contenedor.appendChild(div);
-  });
-}
-
-function mostrarDetallePartido(jugadores) {
-  if (!jugadores || jugadores.length === 0) return;
-
-  const { torneo, fecha_partido, nombre_partido } = jugadores[0];
-
-  const blanco = jugadores.filter(j => j.equipo === "Blanco");
-  const negro = jugadores.filter(j => j.equipo === "Negro");
-
-  const golesBlanco = blanco.reduce((acc, j) => acc + j.goles, 0);
-  const golesNegro = negro.reduce((acc, j) => acc + j.goles, 0);
-
-  const puntajes = calcularPuntos();
-  const goleador = jugadores.reduce((max, j) => j.goles > (max?.goles || 0) ? j : max, null);
-
-  const figuraData = formaciones.find(f => f.fecha_partido === fecha_partido && f.nombre_partido === nombre_partido);
-  const figura = jugadores.find(j => j.id_jugador === figuraData?.id_jugador_votado)?.jugador || "-";
-
-  const tablaEquipo = (lista, equipo) => `
-    <h3>${equipo === "Blanco" ? "⚪ Blanco" : "⚫ Negro"}</h3>
-    <table>
-      <thead><tr><th>Jugador</th><th>Goles</th><th>Puntos</th></tr></thead>
-      <tbody>
-        ${lista.map(j => {
-          const puntosJugador = puntajes[j.jugador]?.puntos || 0;
-          return `<tr>
-            <td>${j.jugador}</td>
-            <td>${j.goles}</td>
-            <td style="color:${puntosJugador < 0 ? 'red' : 'inherit'}">${puntosJugador}</td>
-          </tr>`;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-
-  const modal = document.getElementById("modalDetallePartido");
-  const contenido = document.getElementById("contenidoModalDetalle");
-  contenido.innerHTML = `
-    <span class="close" onclick="cerrarModalDetalle()">&times;</span>
-    <h2>${torneo}</h2>
-    <p>${nombre_partido} - ${fecha_partido}</p>
-    ${tablaEquipo(blanco, "Blanco")}
-    ${tablaEquipo(negro, "Negro")}
-    <p><strong>🥅 Goleador:</strong> ${goleador?.jugador || "-"} (${goleador?.goles || 0} goles)</p>
-    <p><strong>⭐ Figura:</strong> ${figura}</p>
-  `;
-  modal.style.display = "block";
-}
-
-function cerrarModalDetalle() {
-  document.getElementById("modalDetallePartido").style.display = "none";
-}
-
-// Exponer funciones al scope global
-window.abrirModalFormulario = abrirModalFormulario;
-window.cerrarModalFormulario = cerrarModalFormulario;
-window.abrirModalJugador = abrirModalJugador;
-window.cerrarModalJugador = cerrarModalJugador;
-window.filtrarPartidosPorMes = filtrarPartidosPorMes;
-window.cerrarModalDetalle = cerrarModalDetalle;
-window.mostrarTab = mostrarTab;
