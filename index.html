@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Torneo de Fútbol</title>
+  <title>Torneo de Fútbol Martes</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js" defer></script>
@@ -18,7 +18,17 @@
     <main>
       <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
 
-      <section id="ultimosPartidos" class="cards-container"></section>
+      <div class="tabs">
+        <button onclick="mostrarTab('ultimosPartidos')">🏟️ Últimos</button>
+        <button onclick="mostrarTab('historial')">📊 Historial</button>
+      </div>
+
+      <section id="ultimosPartidos" class="cards-container tab"></section>
+
+      <section id="historial" class="tab" style="display: none;">
+        <h2>Historial de Rankings</h2>
+        <div id="historialJugadores" class="scroll-horizontal"></div>
+      </section>
 
       <section class="estadisticas">
         <h2>Estadísticas del Torneo</h2>
@@ -26,11 +36,11 @@
         <select id="tipoGrafico">
           <option value="puntos">Puntos</option>
           <option value="goles">Goles</option>
+          <option value="figura">Figura</option>
           <option value="partidos">Participaciones</option>
         </select>
         <canvas id="graficoJugadores"></canvas>
       </section>
-
       <div class="filtro-fechas">
         <label for="selectAnio">Año:</label>
         <select id="selectAnio"></select>
@@ -40,6 +50,7 @@
       </div>
 
       <div id="partidosFiltrados" class="scroll-horizontal"></div>
+
       <!-- Modal Detalle Partido -->
       <div id="modalDetallePartido" class="modal">
         <div class="modal-content" id="contenidoModalDetalle">
@@ -76,7 +87,6 @@
               <div id="equipoNegro"></div>
             </div>
           </div>
-
           <label for="selectFigura">Figura del Partido:</label>
           <select id="selectFigura" required>
             <option disabled selected>Selecciona figura</option>
@@ -89,6 +99,7 @@
         </form>
       </div>
     </div>
+
     <!-- Modal Agregar Jugador -->
     <div id="modalJugador" class="modal">
       <div class="modal-content">
@@ -101,7 +112,7 @@
       </div>
     </div>
 
-    <!-- Overlay -->
+    <!-- Overlay para modales -->
     <div id="overlay" class="overlay" onclick="cerrarModalFormulario(); cerrarModalJugador();"></div>
   </div>
 </body>
