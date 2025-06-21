@@ -75,10 +75,11 @@ function calcularPuntos() {
                     : golesNegro > golesBlanco ? { Blanco: 0, Negro: 3 }
                     : { Blanco: 1, Negro: 1 };
 
-    const figuras = formaciones
-      .filter(f => f.fecha_partido === jugadoresPartido[0].fecha_partido &&
-                   f.nombre_partido === jugadoresPartido[0].nombre_partido)
-      .map(f => f.id_jugador_votado);
+const figuras = formaciones
+  .filter(f => f.fecha_partido === jugadoresPartido[0].fecha_partido &&
+               f.nombre_partido === jugadoresPartido[0].nombre_partido)
+  .map(f => f.figura_votada);
+
 
     // identificar goleador si hay uno único
     const maxGoles = Math.max(...jugadoresPartido.map(j => j.goles));
@@ -95,10 +96,11 @@ function calcularPuntos() {
       puntos[j.jugador].goles += j.goles;
       puntos[j.jugador].puntos += resultado[j.equipo] || 0;
 
-      if (figuras.includes(j.id_jugador)) {
-        puntos[j.jugador].puntos += 1;
-        puntos[j.jugador].figura += 1;
-      }
+if (figuras.includes(j.jugador)) {
+  puntos[j.jugador].puntos += 1;
+  puntos[j.jugador].figura += 1;
+}
+
 
       if (j.id_jugador === idUnicoGoleador) {
         puntos[j.jugador].puntos += 1;
@@ -131,11 +133,12 @@ function renderUltimosPartidos() {
     golesBlanco = blanco.reduce((acc, j) => acc + j.goles, 0);
     golesNegro = negro.reduce((acc, j) => acc + j.goles, 0);
 
-    const formacion = formaciones.find(f =>
-      f.fecha_partido === jugadores[0].fecha_partido &&
-      f.nombre_partido === jugadores[0].nombre_partido
-    );
-    figura = jugadores.find(j => j.id_jugador === formacion?.id_jugador_votado)?.jugador || "-";
+const formacion = formaciones.find(f =>
+  f.fecha_partido === jugadores[0].fecha_partido &&
+  f.nombre_partido === jugadores[0].nombre_partido
+);
+figura = formacion?.figura_votada || "-";
+
 
     const maxGoles = Math.max(...jugadores.map(j => j.goles));
     const candidatos = jugadores.filter(j => j.goles === maxGoles);
