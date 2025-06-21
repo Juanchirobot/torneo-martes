@@ -25,10 +25,17 @@
 
       <section id="ultimosPartidos" class="cards-container tab"></section>
 
-      <section id="historial" class="tab" style="display: none;">
-        <h2>Historial de Rankings</h2>
-        <div id="historialJugadores" class="scroll-horizontal"></div>
-      </section>
+<section id="historial" class="tab" style="display: none;">
+  <h2>Historial de Rankings</h2>
+  <div class="tabs">
+    <button onclick="mostrarRanking('puntos')">🏆 Puntos</button>
+    <button onclick="mostrarRanking('goles')">🥅 Goles</button>
+    <button onclick="mostrarRanking('figura')">⭐ Figura</button>
+    <button onclick="mostrarRanking('partidos')">📅 Partidos</button>
+  </div>
+  <div id="contenedorRanking"></div>
+</section>
+
 
       <section class="estadisticas">
         <h2>Estadísticas del Torneo</h2>
