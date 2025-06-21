@@ -160,12 +160,13 @@ function actualizarGrafico(tipo = "puntos") {
   if (!ctx) return;
 
   const datos = calcularPuntos();
-  const ordenados = Object.entries(datos)
-    .sort((a, b) => b[1][tipo] - a[1][tipo])
-    .slice(0, 10);
 
-  const labels = ordenados.map(e => e[0]);
-  const data = ordenados.map(e => e[1][tipo]);
+  // Asegura que todos los jugadores estén representados si se filtra por tipo
+  const ordenados = Object.entries(datos)
+    .sort((a, b) => b[1][tipo] - a[1][tipo]);
+
+  const labels = ordenados.map(([nombre]) => nombre);
+  const data = ordenados.map(([, valores]) => valores[tipo]);
 
   if (chartJugadores) chartJugadores.destroy();
 
@@ -181,18 +182,25 @@ function actualizarGrafico(tipo = "puntos") {
     },
     options: {
       indexAxis: "y",
-      plugins: { legend: { display: false } },
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
+          }
+        }
+      },
       scales: {
         x: {
           beginAtZero: true,
-          ticks: {
-            precision: 0
-          }
+          ticks: { precision: 0 }
         }
       }
     }
   });
 }
+
 
 function renderHistorico() {
   const contenedor = document.getElementById("historialJugadores");
@@ -276,6 +284,8 @@ function cerrarModalJugador() {
 // ➕ Agregar nuevo jugador desde el modal
 document.getElementById("formJugador").addEventListener("submit", e => {
   e.preventDefault();
+  guardarSeleccionTemporal(); // Guardamos selección antes de resetear el formulario
+
   const nombre = document.getElementById("nuevoJugador").value.trim();
 
   if (!nombre) {
@@ -290,7 +300,9 @@ document.getElementById("formJugador").addEventListener("submit", e => {
 
   const nuevoID = jugadores.length ? Math.max(...jugadores.map(j => j.id)) + 1 : 1;
   jugadores.push({ id: nuevoID, nombre, tel: '', estado: 'suplente', nuevo: true });
+
   poblarFormulario();
+  aplicarSeleccionTemporal(); // Restauramos después de regenerar
   cerrarModalJugador();
 });
 
@@ -369,6 +381,44 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
     alert("No se pudo enviar el partido.");
   }
 });
+
+// Guardar y restaurar selección temporal del formulario
+let seleccionTemporal = { Blanco: [], Negro: [] };
+
+function guardarSeleccionTemporal() {
+  ["Blanco", "Negro"].forEach(equipo => {
+    seleccionTemporal[equipo] = Array.from(document.querySelectorAll(`#equipo${equipo} .filaJugador`)).map(fila => {
+      const jugador = fila.querySelector("select")?.value || "";
+      const goles = fila.querySelector(".inputGoles")?.value || "";
+      const tarde = fila.querySelector("input[type='checkbox']`)?.checked || false;
+      const minutos = fila.querySelector(".inputMinTarde")?.value || "";
+      return { jugador, goles, tarde, minutos };
+    });
+  });
+}
+
+function aplicarSeleccionTemporal() {
+  ["Blanco", "Negro"].forEach(equipo => {
+    const filas = document.querySelectorAll(`#equipo${equipo} .filaJugador`);
+    filas.forEach((fila, i) => {
+      const data = seleccionTemporal[equipo][i];
+      if (!data) return;
+      const select = fila.querySelector("select");
+      const goles = fila.querySelector(".inputGoles");
+      const tarde = fila.querySelector("input[type='checkbox']");
+      const minutos = fila.querySelector(".inputMinTarde");
+
+      if (select) select.value = data.jugador;
+      if (goles) goles.value = data.goles;
+      if (tarde) tarde.checked = data.tarde;
+      if (minutos) {
+        minutos.value = data.minutos;
+        minutos.style.display = data.tarde ? "inline-block" : "none";
+      }
+    });
+  });
+}
+
 // Renderizar los select y inputs por equipo
 function poblarFormulario() {
   ["Blanco", "Negro"].forEach(equipo => {
