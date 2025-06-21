@@ -275,3 +275,78 @@ canvas {
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 999;
 }
+/* 🎨 Estilos para historial con slider */
+#historialJugadores {
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.sliderHistorial {
+  margin-bottom: 3rem;
+}
+
+.sliderHistorial h3 {
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.sliderCarrusel {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1rem;
+}
+
+.tarjetaHistorial {
+  flex: 0 0 auto;
+  min-width: 120px;
+  max-width: 140px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  scroll-snap-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.tarjetaHistorial strong {
+  font-size: 1.1rem;
+  display: block;
+}
+
+.tarjetaHistorial span {
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.tarjetaHistorial small {
+  font-size: 0.75rem;
+  color: #ccc;
+}
+.sliderHistorial {
+  margin-bottom: 2rem;
+}
+
+.sliderCarrusel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.tarjetaHistorial {
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #fff;
+  min-width: 140px;
+  text-align: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}
+
