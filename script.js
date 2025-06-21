@@ -200,13 +200,11 @@ function actualizarGrafico(tipo = "puntos") {
     }
   });
 }
-
-
 function renderHistorico() {
   const contenedor = document.getElementById("historialJugadores");
   if (!contenedor) return;
 
-  const tipos = ["puntos", "goles", "figura"];
+  const tipos = ["puntos", "goles", "figura", "partidos"];
   const datos = calcularPuntos();
 
   contenedor.innerHTML = tipos.map(tipo => {
@@ -223,14 +221,14 @@ function renderHistorico() {
 
     return `
       <div class="sliderHistorial">
-        <h3>Top ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</h3>
-        <div class="sliderCarrusel">
-          ${tarjetas}
-        </div>
+        <h3>🏆 Ranking por ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</h3>
+        <div class="sliderCarrusel">${tarjetas}</div>
       </div>
     `;
   }).join("");
 }
+
+
 
 // 🎯 Inicialización al cargar
 document.addEventListener("DOMContentLoaded", async () => {
