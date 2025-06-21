@@ -396,7 +396,7 @@ function guardarSeleccionTemporal() {
     seleccionTemporal[equipo] = Array.from(document.querySelectorAll(`#equipo${equipo} .filaJugador`)).map(fila => {
       const jugador = fila.querySelector("select")?.value || "";
       const goles = fila.querySelector(".inputGoles")?.value || "";
-      const tarde = fila.querySelector("input[type='checkbox']`)?.checked || false;
+     const tarde = fila.querySelector("input[type='checkbox']").checked || false;
       const minutos = fila.querySelector(".inputMinTarde")?.value || "";
       return { jugador, goles, tarde, minutos };
     });
