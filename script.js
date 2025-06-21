@@ -362,34 +362,55 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
     };
   }
 
-  const payload = {
-    jugadores: todos.map(j => ({
-      ...j,
-      torneo,
-      fecha_inicio_torneo,
-      fecha_partido,
-      nombre_partido
-    })),
-    formacion,
-    nuevoJugador
-  };
+ const jugadoresNuevos = jugadores.filter(j => j.nuevo);
+const jugadoresDelPartido = [...blancos, ...negros];
 
-  try {
-    await fetch(WEBHOOK_PARTIDO_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    alert("✅ Partido enviado correctamente.");
-    document.getElementById("formPartido").reset();
-    document.querySelector(".equipos-grid").style.display = "none";
-    cerrarModalFormulario();
-    location.reload(); // para ver el impacto en tarjetas y gráficos
-  } catch (err) {
-    console.error("❌ Error al enviar", err);
-    alert("No se pudo enviar el partido.");
-  }
-});
+const payload = {
+  jugadores: jugadoresNuevos.map(j => ({
+    fecha_alta: new Date().toISOString().split("T")[0],
+    id_jugador: j.id,
+    nombre_jugador: j.nombre,
+    Estado: "suplente",
+    telefono: j.tel || ""
+  })),
+  partidos: jugadoresDelPartido.map(j => ({
+    nombre_torneo: torneo,
+    fecha_inicio_torneo,
+    fecha_partido,
+    nombre_partido,
+    jugador_nombre: j.jugador_nombre,
+    id_jugador: j.id_jugador,
+    equipo: j.equipo,
+    goles_partido: j.goles_partido,
+    flag_figura: (j.id_jugador === figuraID) ? 1 : 0,
+    puntos: 0  // ⚠️ Si querés calcularlo en frontend, reemplazá 0 por la lógica que ya uses
+  })),
+  formacion: [{
+    fecha_partido,
+    nombre_partido,
+    votante: "web",
+    figura_votada: figura_nombre,
+    id_jugador_votado: figuraID,
+    telefono: jugadores.find(j => j.id === figuraID)?.tel || "",
+    flag_ausecia_voto: 0
+  }]
+};
+
+try {
+  await fetch(WEBHOOK_PARTIDO_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  alert("✅ Partido enviado correctamente.");
+  document.getElementById("formPartido").reset();
+  document.querySelector(".equipos-grid").style.display = "none";
+  cerrarModalFormulario();
+  location.reload();
+} catch (err) {
+  console.error("❌ Error al enviar", err);
+  alert("No se pudo enviar el partido.");
+}
 
 // Guardar y restaurar selección temporal del formulario
 let seleccionTemporal = { Blanco: [], Negro: [] };
