@@ -211,19 +211,27 @@ function renderHistorico() {
 
   contenedor.innerHTML = tipos.map(tipo => {
     const ordenados = Object.entries(datos)
-      .sort((a, b) => b[1][tipo] - a[1][tipo])
-      .slice(0, 5);
+      .sort((a, b) => b[1][tipo] - a[1][tipo]);
+
+    const tarjetas = ordenados.map(([nombre, stats]) => `
+      <div class="tarjetaHistorial">
+        <strong>${nombre}</strong>
+        <span>${stats[tipo]}</span>
+        <small>${tipo}</small>
+      </div>
+    `).join("");
 
     return `
-      <div class="cardPartidoCompacto">
-        <h3>🏆 Top ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</h3>
-        <ol>
-          ${ordenados.map(([nombre, stats]) => `<li>${nombre} (${stats[tipo]})</li>`).join("")}
-        </ol>
+      <div class="sliderHistorial">
+        <h3>Top ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</h3>
+        <div class="sliderCarrusel">
+          ${tarjetas}
+        </div>
       </div>
     `;
   }).join("");
 }
+
 // 🎯 Inicialización al cargar
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarDatos();
