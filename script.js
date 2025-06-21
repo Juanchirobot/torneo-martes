@@ -534,4 +534,83 @@ function prepararVotacion(jugadoresPartido) {
 
   select.style.display = "block";
 }
+function inicializarFiltrosFecha() {
+  const anios = [...new Set(partidos.map(p => new Date(p.fecha_partido).getFullYear()))];
+  const selectAnio = document.getElementById("selectAnio");
+  const selectMes = document.getElementById("selectMes");
+
+  selectAnio.innerHTML = `<option value="">Todos</option>` + anios.map(a => `<option value="${a}">${a}</option>`).join("");
+  selectMes.innerHTML = `<option value="">Todos</option>` + Array.from({ length: 12 }, (_, i) => {
+    const mesNombre = new Date(0, i).toLocaleString("es", { month: "long" });
+    return `<option value="${i + 1}">${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)}</option>`;
+  }).join("");
+}
+
+function filtrarPartidosPorMes() {
+  const anio = parseInt(document.getElementById("selectAnio").value);
+  const mes = parseInt(document.getElementById("selectMes").value);
+  const contenedor = document.getElementById("partidosFiltrados");
+  contenedor.innerHTML = "";
+
+  const partidosAgrupados = {};
+  partidos.forEach(p => {
+    const fecha = new Date(p.fecha_partido);
+    if ((!anio || fecha.getFullYear() === anio) && (!mes || fecha.getMonth() + 1 === mes)) {
+      const clave = `${p.fecha_partido}__${p.nombre_partido}`;
+      if (!partidosAgrupados[clave]) partidosAgrupados[clave] = [];
+      partidosAgrupados[clave].push(p);
+    }
+  });
+
+  const html = Object.entries(partidosAgrupados).map(([clave, jugadores]) => {
+    const blanco = jugadores.filter(j => j.equipo === "Blanco");
+    const negro = jugadores.filter(j => j.equipo === "Negro");
+    const golesB = blanco.reduce((acc, j) => acc + j.goles, 0);
+    const golesN = negro.reduce((acc, j) => acc + j.goles, 0);
+    const figura = formaciones.find(f => f.fecha_partido === jugadores[0].fecha_partido && f.nombre_partido === jugadores[0].nombre_partido)?.figura_votada || "-";
+    const goleador = jugadores.reduce((max, j) => j.goles > max.goles ? j : max, { goles: -1 }).jugador || "-";
+
+    return `
+      <div class="cardPartidoCompacto">
+        <strong>${clave.replace("__", " - ")}</strong><br/>
+        ⚪ ${golesB} vs ${golesN} ⚫<br/>
+        🥅 Goleador: ${goleador}<br/>
+        ⭐ Figura: ${figura}
+      </div>
+    `;
+  }).join("");
+
+  contenedor.innerHTML = html || "<p>No se encontraron partidos para ese período.</p>";
+}
+function mostrarRanking(tipo) {
+  const contenedor = document.getElementById("contenedorRanking");
+  const datos = calcularPuntos();
+  const ordenados = Object.entries(datos).sort((a, b) => b[1][tipo] - a[1][tipo]);
+
+  const filas = ordenados.map(([nombre, stats], i) => {
+    const estado = jugadores.find(j => j.nombre === nombre)?.estado || "-";
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${nombre}</td>
+        <td>${estado}</td>
+        <td>${stats[tipo]}</td>
+      </tr>
+    `;
+  }).join("");
+
+  contenedor.innerHTML = `
+    <table class="tablaRanking">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Jugador</th>
+          <th>Estado</th>
+          <th>${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</th>
+        </tr>
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>
+  `;
+}
 
