@@ -634,7 +634,6 @@ function mostrarRanking(tipo) {
         </tr>
       </thead>
       <tbody>${filas}</tbody>
-    </table>
-  `;
+    </table>;
 }
 
