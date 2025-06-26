@@ -383,7 +383,22 @@ const payload = {
     equipo: j.equipo,
     goles_partido: j.goles_partido,
     flag_figura: (j.id_jugador === figuraID) ? 1 : 0,
-    puntos: 0  // ⚠️ Si querés calcularlo en frontend, reemplazá 0 por la lógica que ya uses
+    puntos: (() => {
+      const golesBlanco = blancos.reduce((acc, j) => acc + j.goles_partido, 0);
+      const golesNegro = negros.reduce((acc, j) => acc + j.goles_partido, 0);
+      const resultado = golesBlanco > golesNegro ? { Blanco: 3, Negro: 0 }
+                      : golesNegro > golesBlanco ? { Blanco: 0, Negro: 3 }
+                      : { Blanco: 1, Negro: 1 };
+
+      const maxGoles = Math.max(...jugadoresDelPartido.map(j => j.goles_partido));
+      const idGoleador = jugadoresDelPartido.filter(j => j.goles_partido === maxGoles);
+      const hayUnicoGoleador = idGoleador.length === 1 ? idGoleador[0].id_jugador : null;
+
+      const esFigura = j.id_jugador === figuraID ? 1 : 0;
+      const esGoleador = j.id_jugador === hayUnicoGoleador ? 1 : 0;
+
+      return (resultado[j.equipo] || 0) + esFigura + esGoleador;
+    })()
   })),
   formacion: [{
     fecha_partido,
@@ -395,6 +410,7 @@ const payload = {
     flag_ausecia_voto: 0
   }]
 };
+
 
 try {
   await fetch(WEBHOOK_PARTIDO_URL, {
