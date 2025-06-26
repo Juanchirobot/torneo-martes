@@ -411,7 +411,7 @@ try {
   console.error("❌ Error al enviar", err);
   alert("No se pudo enviar el partido.");
 }
-
+});
 // Guardar y restaurar selección temporal del formulario
 let seleccionTemporal = { Blanco: [], Negro: [] };
 
