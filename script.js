@@ -78,7 +78,8 @@ function calcularPuntos() {
 const figuras = formaciones
   .filter(f => f.fecha_partido === jugadoresPartido[0].fecha_partido &&
                f.nombre_partido === jugadoresPartido[0].nombre_partido)
-  .map(f => f.figura_votada);
+  .map(f => f.figura_votada.toLowerCase().trim());
+
 
 
     // identificar goleador si hay uno único
@@ -96,11 +97,10 @@ const figuras = formaciones
       puntos[j.jugador].goles += j.goles;
       puntos[j.jugador].puntos += resultado[j.equipo] || 0;
 
-if (figuras.includes(j.jugador)) {
+if (figuras.includes(j.jugador.toLowerCase().trim())) {
   puntos[j.jugador].puntos += 1;
   puntos[j.jugador].figura += 1;
 }
-
 
       if (j.id_jugador === idUnicoGoleador) {
         puntos[j.jugador].puntos += 1;
