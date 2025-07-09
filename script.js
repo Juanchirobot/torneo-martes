@@ -12,15 +12,24 @@ function obtenerFiguraPartido(fecha, nombrePartido) {
   const votos = formaciones.filter(
     v => v.fecha_partido === fecha && v.nombre_partido === nombrePartido
   );
+
   const conteo = {};
+
   votos.forEach(v => {
     const nombre = (v.figura_votada || '').toLowerCase().trim();
     if (!nombre) return;
     conteo[nombre] = (conteo[nombre] || 0) + 1;
   });
+
+  console.log("🟨 Votos recolectados:", votos);
+  console.log("📊 Conteo de figura:", conteo);
+
   if (!Object.keys(conteo).length) return null;
-  return Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0]; // devuelve nombre
+  const figura = Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0];
+  console.log("⭐ Figura detectada:", figura);
+  return figura;
 }
+
 
 async function cargarDatos() {
   try {
