@@ -7,24 +7,19 @@ let partidos = [];
 let formaciones = [];
 let chartJugadores = null;
 
-// Determina la figura de un partido en base a los votos registrados
+// 🔍 Determina la figura más votada por partido
 function obtenerFiguraPartido(fecha, nombrePartido) {
   const votos = formaciones.filter(
     v => v.fecha_partido === fecha && v.nombre_partido === nombrePartido
   );
-
   const conteo = {};
-
   votos.forEach(v => {
-    const id = v.id_jugador_votado;
-    if (!id) return;
-    conteo[id] = (conteo[id] || 0) + 1;
+    const nombre = (v.figura_votada || '').toLowerCase().trim();
+    if (!nombre) return;
+    conteo[nombre] = (conteo[nombre] || 0) + 1;
   });
-
   if (!Object.keys(conteo).length) return null;
-
-  const idGanador = Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0];
-  return parseInt(idGanador);
+  return Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0]; // devuelve nombre
 }
 
 async function cargarDatos() {
@@ -72,6 +67,7 @@ async function cargarDatos() {
     console.error("❌ Error cargando datos:", err);
   }
 }
+
 
 function calcularPuntos() {
   const puntos = {};
