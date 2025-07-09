@@ -614,3 +614,13 @@ function prepararVotacion(jugadoresPartido) {
 
   select.style.display = "block";
 }
+
+// 🎛 Cambiar entre pestañas
+function mostrarTab(tabId) {
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.style.display = "none";
+  });
+  const seleccionada = document.getElementById(tabId);
+  if (seleccionada) seleccionada.style.display = "block";
+}
+
