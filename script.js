@@ -459,39 +459,41 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
   const negros = obtenerJugadores("Negro");
   const todos = [...blancos, ...negros];
 
-  const figuraID = jugadores.find(j => j.nombre === figura_nombre)?.id || null;
+ const figuraID = jugadores.find(j => j.nombre === figura_nombre)?.id || null;
 
-  const jugadoresNuevos = jugadores.filter(j => j.nuevo);
-  const payload = {
-    jugadores: jugadoresNuevos.map(j => ({
-      fecha_alta: new Date().toISOString().split("T")[0],
-      id_jugador: j.id,
-      nombre_jugador: j.nombre,
-      Estado: "suplente",
-      telefono: j.tel || ""
-    })),
-    partidos: todos.map(j => ({
-      nombre_torneo: torneo,
-      fecha_inicio_torneo,
-      fecha_partido,
-      nombre_partido,
-      jugador_nombre: j.jugador_nombre,
-      id_jugador: j.id_jugador,
-      equipo: j.equipo,
-      goles_partido: j.goles_partido,
-      flag_figura: j.id_jugador === figuraID ? 1 : 0,
-      puntos: 0 // opcional, puede calcularse luego
-    })),
-    formacion: [{
-      fecha_partido,
-      nombre_partido,
-      votante: "web",
-      figura_votada: figura_nombre,
-      id_jugador_votado: figuraID,
-      telefono: jugadores.find(j => j.id === figuraID)?.tel || "",
-      flag_ausecia_voto: 0
-    }]
-  };
+const jugadoresNuevos = jugadores.filter(j => j.nuevo);
+const jugadoresTitulares = [...blancos, ...negros];
+
+const payload = {
+  jugadores: jugadoresNuevos.map(j => ({
+    fecha_alta: new Date().toISOString().split("T")[0],
+    id_jugador: j.id,
+    nombre_jugador: j.nombre,
+    Estado: "suplente",
+    telefono: j.tel || ""
+  })),
+  partidos: jugadoresTitulares.map(j => ({
+    nombre_torneo: torneo,
+    fecha_inicio_torneo,
+    fecha_partido,
+    nombre_partido,
+    jugador_nombre: j.jugador_nombre,
+    id_jugador: j.id_jugador,
+    equipo: j.equipo,
+    goles_partido: j.goles_partido,
+    flag_figura: j.id_jugador === figuraID ? 1 : 0,
+    puntos: 0 // puede calcularse luego si querés
+  })),
+  formacion: jugadoresTitulares.map(j => ({
+    fecha_partido,
+    nombre_partido,
+    votante: j.jugador_nombre,
+    figura_votada: figura_nombre,
+    id_jugador_votado: figuraID,
+    telefono: "web",
+    flag_ausencia_voto: 0
+  }))
+};
 
   try {
     await fetch(WEBHOOK_PARTIDO_URL, {
