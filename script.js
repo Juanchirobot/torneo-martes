@@ -91,41 +91,45 @@ function calcularPuntos() {
                     : golesNegro > golesBlanco ? { Blanco: 0, Negro: 3 }
                     : { Blanco: 1, Negro: 1 };
 
-const figuraGanadora = obtenerFiguraPartido(
-  jugadoresPartido[0].fecha_partido,
-  jugadoresPartido[0].nombre_partido
-);
+    const figuraNombre = obtenerFiguraPartido(
+      jugadoresPartido[0].fecha_partido,
+      jugadoresPartido[0].nombre_partido
+    );
 
-
-
-    // identificar goleador si hay uno único
     const maxGoles = Math.max(...jugadoresPartido.map(j => j.goles));
     const goleadores = jugadoresPartido.filter(j => j.goles === maxGoles);
     const hayUnicoGoleador = goleadores.length === 1;
     const idUnicoGoleador = hayUnicoGoleador ? goleadores[0].id_jugador : null;
 
     jugadoresPartido.forEach(j => {
-      if (!puntos[j.jugador]) {
-        puntos[j.jugador] = { puntos: 0, goles: 0, partidos: 0, figura: 0 };
+      if (!puntos[j.id_jugador]) {
+        puntos[j.id_jugador] = {
+          nombre: j.jugador,
+          puntos: 0,
+          goles: 0,
+          partidos: 0,
+          figura: 0
+        };
       }
 
-      puntos[j.jugador].partidos += 1;
-      puntos[j.jugador].goles += j.goles;
-      puntos[j.jugador].puntos += resultado[j.equipo] || 0;
+      puntos[j.id_jugador].partidos += 1;
+      puntos[j.id_jugador].goles += j.goles;
+      puntos[j.id_jugador].puntos += resultado[j.equipo] || 0;
 
-if (figuraGanadora && j.id_jugador === figuraGanadora) {
-  puntos[j.jugador].puntos += 1;
-  puntos[j.jugador].figura += 1;
-}
+      if (figuraNombre && j.jugador.toLowerCase().trim() === figuraNombre.toLowerCase()) {
+        puntos[j.id_jugador].puntos += 1;
+        puntos[j.id_jugador].figura += 1;
+      }
 
       if (j.id_jugador === idUnicoGoleador) {
-        puntos[j.jugador].puntos += 1;
+        puntos[j.id_jugador].puntos += 1;
       }
     });
   });
 
   return puntos;
 }
+
 function renderUltimosPartidos() {
   const agrupados = {};
 
