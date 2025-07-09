@@ -16,6 +16,12 @@
     </header>
 
     <main>
+      <!-- 🔧 Botones de gestión de torneo -->
+      <div class="acciones-form" style="margin-bottom: 1rem;">
+        <button onclick="iniciarTorneo()">🏁 Iniciar Torneo</button>
+        <button onclick="terminarTorneo()">🔚 Terminar Torneo</button>
+      </div>
+
       <button class="btn primario" onclick="abrirModalFormulario()">➕ Cargar Partido</button>
 
       <div class="tabs">
@@ -25,17 +31,16 @@
 
       <section id="ultimosPartidos" class="cards-container tab"></section>
 
-<section id="historial" class="tab" style="display: none;">
-  <h2>Historial de Rankings</h2>
-  <div class="tabs">
-    <button onclick="mostrarRanking('puntos')">🏆 Puntos</button>
-    <button onclick="mostrarRanking('goles')">🥅 Goles</button>
-    <button onclick="mostrarRanking('figura')">⭐ Figura</button>
-    <button onclick="mostrarRanking('partidos')">📅 Partidos</button>
-  </div>
-  <div id="contenedorRanking"></div>
-</section>
-
+      <section id="historial" class="tab" style="display: none;">
+        <h2>Historial de Rankings</h2>
+        <div class="tabs">
+          <button onclick="mostrarRanking('puntos')">🏆 Puntos</button>
+          <button onclick="mostrarRanking('goles')">🥅 Goles</button>
+          <button onclick="mostrarRanking('figura')">⭐ Figura</button>
+          <button onclick="mostrarRanking('partidos')">📅 Partidos</button>
+        </div>
+        <div id="contenedorRanking"></div>
+      </section>
 
       <section class="estadisticas">
         <h2>Estadísticas del Torneo</h2>
@@ -48,6 +53,7 @@
         </select>
         <canvas id="graficoJugadores"></canvas>
       </section>
+
       <div class="filtro-fechas">
         <label for="selectAnio">Año:</label>
         <select id="selectAnio"></select>
@@ -94,6 +100,7 @@
               <div id="equipoNegro"></div>
             </div>
           </div>
+
           <label for="selectFigura">Figura del Partido:</label>
           <select id="selectFigura" required>
             <option disabled selected>Selecciona figura</option>
