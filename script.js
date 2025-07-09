@@ -7,6 +7,21 @@ let partidos = [];
 let formaciones = [];
 let chartJugadores = null;
 
+// Determina la figura de un partido en base a los votos registrados
+function obtenerFiguraPartido(fecha, nombrePartido) {
+  const votos = formaciones.filter(
+    v => v.fecha_partido === fecha && v.nombre_partido === nombrePartido
+  );
+  const conteo = {};
+  votos.forEach(v => {
+    const nombre = (v.figura_votada || '').toLowerCase().trim();
+    if (!nombre) return;
+    conteo[nombre] = (conteo[nombre] || 0) + 1;
+  });
+  if (!Object.keys(conteo).length) return null;
+  return Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0];
+}
+
 async function cargarDatos() {
   try {
     const [jugRes, partRes, formRes] = await Promise.all([
@@ -75,10 +90,10 @@ function calcularPuntos() {
                     : golesNegro > golesBlanco ? { Blanco: 0, Negro: 3 }
                     : { Blanco: 1, Negro: 1 };
 
-const figuras = formaciones
-  .filter(f => f.fecha_partido === jugadoresPartido[0].fecha_partido &&
-               f.nombre_partido === jugadoresPartido[0].nombre_partido)
-  .map(f => f.figura_votada.toLowerCase().trim());
+const figuraGanadora = obtenerFiguraPartido(
+  jugadoresPartido[0].fecha_partido,
+  jugadoresPartido[0].nombre_partido
+);
 
 
 
@@ -97,7 +112,7 @@ const figuras = formaciones
       puntos[j.jugador].goles += j.goles;
       puntos[j.jugador].puntos += resultado[j.equipo] || 0;
 
-if (figuras.includes(j.jugador.toLowerCase().trim())) {
+if (figuraGanadora && j.jugador.toLowerCase().trim() === figuraGanadora) {
   puntos[j.jugador].puntos += 1;
   puntos[j.jugador].figura += 1;
 }
@@ -133,11 +148,10 @@ function renderUltimosPartidos() {
     golesBlanco = blanco.reduce((acc, j) => acc + j.goles, 0);
     golesNegro = negro.reduce((acc, j) => acc + j.goles, 0);
 
-const formacion = formaciones.find(f =>
-  f.fecha_partido === jugadores[0].fecha_partido &&
-  f.nombre_partido === jugadores[0].nombre_partido
-);
-figura = formacion?.figura_votada || "-";
+figura = obtenerFiguraPartido(
+  jugadores[0].fecha_partido,
+  jugadores[0].nombre_partido
+) || "-";
 
 
     const maxGoles = Math.max(...jugadores.map(j => j.goles));
@@ -607,7 +621,10 @@ function filtrarPartidosPorMes() {
     const negro = jugadores.filter(j => j.equipo === "Negro");
     const golesB = blanco.reduce((acc, j) => acc + j.goles, 0);
     const golesN = negro.reduce((acc, j) => acc + j.goles, 0);
-    const figura = formaciones.find(f => f.fecha_partido === jugadores[0].fecha_partido && f.nombre_partido === jugadores[0].nombre_partido)?.figura_votada || "-";
+    const figura = obtenerFiguraPartido(
+      jugadores[0].fecha_partido,
+      jugadores[0].nombre_partido
+    ) || "-";
     const goleador = jugadores.reduce((max, j) => j.goles > max.goles ? j : max, { goles: -1 }).jugador || "-";
 
     return `
