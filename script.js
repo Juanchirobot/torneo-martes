@@ -12,14 +12,19 @@ function obtenerFiguraPartido(fecha, nombrePartido) {
   const votos = formaciones.filter(
     v => v.fecha_partido === fecha && v.nombre_partido === nombrePartido
   );
+
   const conteo = {};
+
   votos.forEach(v => {
-    const nombre = (v.figura_votada || '').toLowerCase().trim();
-    if (!nombre) return;
-    conteo[nombre] = (conteo[nombre] || 0) + 1;
+    const id = v.id_jugador_votado;
+    if (!id) return;
+    conteo[id] = (conteo[id] || 0) + 1;
   });
+
   if (!Object.keys(conteo).length) return null;
-  return Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0];
+
+  const idGanador = Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0];
+  return parseInt(idGanador);
 }
 
 async function cargarDatos() {
@@ -112,7 +117,7 @@ const figuraGanadora = obtenerFiguraPartido(
       puntos[j.jugador].goles += j.goles;
       puntos[j.jugador].puntos += resultado[j.equipo] || 0;
 
-if (figuraGanadora && j.jugador.toLowerCase().trim() === figuraGanadora) {
+if (figuraGanadora && j.id_jugador === figuraGanadora) {
   puntos[j.jugador].puntos += 1;
   puntos[j.jugador].figura += 1;
 }
@@ -244,6 +249,19 @@ function renderHistorico() {
     `;
   }).join("");
 }
+// 🏁 Funciones para fijar el torneo activo
+function iniciarTorneo() {
+  const nombre = prompt("Nombre del torneo:");
+  const fecha = prompt("Fecha de inicio del torneo (YYYY-MM-DD):");
+  if (!nombre || !fecha) return alert("⚠️ Faltan datos.");
+  localStorage.setItem("torneoActual", JSON.stringify({ nombre, fecha }));
+  alert("✅ Torneo guardado correctamente.");
+}
+
+function terminarTorneo() {
+  localStorage.removeItem("torneoActual");
+  alert("🗑️ Torneo eliminado. Deberás escribirlo a mano la próxima vez.");
+}
 
 
 
@@ -260,6 +278,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
+
+
 // 🎛 Cambiar entre pestañas
 function mostrarTab(tabId) {
   document.querySelectorAll(".tab").forEach(tab => {
@@ -274,8 +294,17 @@ function abrirModalFormulario() {
   const overlay = document.getElementById("overlay");
   overlay.style.display = "block";
   modal.style.display = "flex";
+
+  // 🧠 Auto-rellenar torneo desde localStorage
+  const torneoGuardado = JSON.parse(localStorage.getItem("torneoActual") || "null");
+  if (torneoGuardado) {
+    document.getElementById("nombre_torneo").value = torneoGuardado.nombre;
+    document.getElementById("fecha_inicio_torneo").value = torneoGuardado.fecha;
+  }
+
   requestAnimationFrame(() => modal.classList.add("show"));
 }
+
 
 function cerrarModalFormulario() {
   const modal = document.getElementById("modalFormulario");
