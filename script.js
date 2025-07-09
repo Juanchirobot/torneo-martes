@@ -9,12 +9,24 @@ let chartJugadores = null;
 
 // 🔍 Determina la figura más votada por partido
 function obtenerFiguraPartido(fecha, nombrePartido) {
-  const votos = formaciones.filter(
-    v => v.fecha_partido === fecha && v.nombre_partido === nombrePartido
-  );
+  console.log("📌 Buscando figura para:", fecha, nombrePartido);
+
+  const votos = formaciones.filter(v => {
+    const matchFecha = v.fecha_partido === fecha;
+    const matchNombre = v.nombre_partido === nombrePartido;
+
+    if (!matchFecha || !matchNombre) {
+      console.log("❌ No coincide:", {
+        registro: v,
+        matchFecha,
+        matchNombre
+      });
+    }
+
+    return matchFecha && matchNombre;
+  });
 
   const conteo = {};
-
   votos.forEach(v => {
     const nombre = (v.figura_votada || '').toLowerCase().trim();
     if (!nombre) return;
@@ -29,6 +41,7 @@ function obtenerFiguraPartido(fecha, nombrePartido) {
   console.log("⭐ Figura detectada:", figura);
   return figura;
 }
+
 
 
 async function cargarDatos() {
