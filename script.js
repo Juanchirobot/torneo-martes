@@ -460,6 +460,9 @@ document.getElementById("formPartido")?.addEventListener("submit", async (e) => 
   const todos = [...blancos, ...negros];
 
  const figuraID = jugadores.find(j => j.nombre === figura_nombre)?.id || null;
+if (!figura_nombre || figura_nombre === "Selecciona figura") {
+  return alert("⚠️ Debes seleccionar una figura del partido.");
+}
 
 const jugadoresNuevos = jugadores.filter(j => j.nuevo);
 const jugadoresTitulares = [...blancos, ...negros];
@@ -563,6 +566,14 @@ function poblarFormulario() {
         opt.value = j.nombre;
         opt.textContent = j.nombre;
         select.appendChild(opt);
+        select.addEventListener("change", () => {
+  const seleccionados = [
+    ...obtenerJugadores("Blanco"),
+    ...obtenerJugadores("Negro")
+  ].filter(j => j.jugador_nombre);
+  prepararVotacion(seleccionados);
+});
+
       });
 
       const inputGoles = document.createElement("input");
@@ -576,8 +587,13 @@ function poblarFormulario() {
       contenedor.appendChild(fila);
     }
   });
+const jugadoresCargados = [
+  ...obtenerJugadores("Blanco"),
+  ...obtenerJugadores("Negro")
+].filter(j => j.jugador_nombre); // Evita vacíos
 
-  prepararVotacion([]);
+prepararVotacion(jugadoresCargados);
+
 }
 
 function obtenerJugadores(equipo) {
@@ -601,6 +617,18 @@ function prepararVotacion(jugadoresPartido) {
   if (!select) return;
 
   select.innerHTML = "";
+
+  // 🟡 Si no hay jugadores, mostramos un aviso
+  if (jugadoresPartido.length === 0) {
+    const aviso = document.createElement("option");
+    aviso.text = "⚠️ Selecciona jugadores arriba";
+    aviso.disabled = true;
+    aviso.selected = true;
+    select.appendChild(aviso);
+    return;
+  }
+
+  // 🟢 Si hay jugadores, mostramos normalmente
   const defaultOption = document.createElement("option");
   defaultOption.text = "Selecciona figura";
   defaultOption.disabled = true;
